@@ -1,0 +1,865 @@
+2026-01-22 16:03:26,731 \U0001f680 Hybrid Bot v1.4.2 Started!
+2026-01-22 16:03:26,734 \U0001f4b0 Starting Balance: $3349.89
+2026-01-22 16:03:26,735 \U0001f916 AI Analytics & Chat: ENABLED
+2026-01-22 16:12:55,392 \U0001f680 Hybrid Bot v1.4.2 Started!
+2026-01-22 16:12:55,394 \U0001f4b0 Starting Balance: $3349.89
+2026-01-22 16:12:55,401 \U0001f916 AI Analytics & Chat: ENABLED
+2026-01-22 16:25:07,887 \U0001f680 Hybrid Bot v1.4.2 Started!
+2026-01-22 16:25:07,888 \U0001f4b0 Starting Balance: $3349.89
+2026-01-22 16:25:07,888 \U0001f916 AI Analytics & Chat: ENABLED
+2026-01-22 16:29:36,976 \u26a0\ufe0f Main loop error: 'msg_id'
+2026-01-22 16:34:03,296 \u23f3 Opening Sell Stage2 (Confluence: 3/7)
+2026-01-22 16:34:03,762 \U0001f4dd Ordering: 0.0014 coins (~6.63$) @ 89893.5
+2026-01-22 16:34:06,979 \U0001f7e2 OPENED: Sell @ 89894.4000
+2026-01-22 16:34:08,389 \u274c TP fail: bingx {"code":109400,"msg":"In the Hedge mode, the 'ReduceOnly' field can not be filled.","data":{}}
+2026-01-22 16:34:09,204 \U0001f528 DCA placed @ 89103.3000 (Dist: 0.88%)
+2026-01-22 16:34:25,357 \U0001f691 Doctor: No TP order! Placing...
+2026-01-22 16:34:25,598 \u274c TP fail: bingx {"code":109400,"msg":"In the Hedge mode, the 'ReduceOnly' field can not be filled.","data":{}}
+2026-01-22 16:34:26,389 \U0001f4c9 Status: PnL 0.05$ (0.00%) | DCA: 0
+2026-01-22 16:34:47,686 \U0001f691 Doctor: No TP order! Placing...
+2026-01-22 16:34:47,926 \u274c TP fail: bingx {"code":109400,"msg":"In the Hedge mode, the 'ReduceOnly' field can not be filled.","data":{}}
+2026-01-22 16:35:00,380 \U0001f4c9 Status: PnL 0.03$ (0.00%) | DCA: 0
+2026-01-22 16:35:10,320 \U0001f691 Doctor: No TP order! Placing...
+2026-01-22 16:35:11,039 \u274c TP fail: bingx {"code":109400,"msg":"In the Hedge mode, the 'ReduceOnly' field can not be filled.","data":{}}
+2026-01-22 16:35:32,935 \U0001f691 Doctor: No TP order! Placing...
+2026-01-22 16:35:33,170 \u274c TP fail: bingx {"code":109400,"msg":"In the Hedge mode, the 'ReduceOnly' field can not be filled.","data":{}}
+2026-01-22 16:35:34,444 \U0001f4c9 Status: PnL 0.04$ (0.00%) | DCA: 0
+2026-01-22 16:35:56,259 \U0001f691 Doctor: No TP order! Placing...
+2026-01-22 16:35:56,498 \u274c TP fail: bingx {"code":109400,"msg":"In the Hedge mode, the 'ReduceOnly' field can not be filled.","data":{}}
+2026-01-22 16:39:05,787 \U0001f680 Hybrid Bot v1.4.2 Started!
+2026-01-22 16:39:05,787 \U0001f4b0 Starting Balance: $3339.38
+2026-01-22 16:39:05,788 \U0001f916 AI Analytics & Chat: ENABLED
+2026-01-22 16:39:14,609 \u23f3 Opening Sell Stage2 (Confluence: 3/7)
+2026-01-22 16:39:15,062 \U0001f4dd Ordering: 0.0014 coins (~6.61$) @ 89829.2
+2026-01-22 16:39:18,446 \u26a0\ufe0f Order timed out. Cancelling...
+2026-01-22 16:39:29,797 \u23f3 Opening Sell Stage2 (Confluence: 3/7)
+2026-01-22 16:39:30,250 \U0001f4dd Ordering: 0.0014 coins (~6.61$) @ 89810.7
+2026-01-22 16:39:33,164 \u26a0\ufe0f Order timed out. Cancelling...
+2026-01-22 16:39:43,519 \u23f3 Opening Sell Stage2 (Confluence: 3/7)
+2026-01-22 16:39:44,459 \U0001f4dd Ordering: 0.0014 coins (~6.63$) @ 89814.2
+2026-01-22 16:39:59,055 \U0001f7e2 OPENED: Sell @ 89814.2000
+2026-01-22 16:40:00,568 \u274c TP fail: bingx {"code":101205,"msg":"No position to close","data":{}}
+2026-01-22 16:40:00,874 \U0001f528 DCA placed @ 89023.8000 (Dist: 0.88%)
+2026-01-22 16:40:12,097 \U0001f691 Doctor: No TP order! Placing...
+2026-01-22 16:40:12,413 \u274c TP fail: bingx {"code":101205,"msg":"No position to close","data":{}}
+2026-01-22 16:40:13,184 \U0001f4c9 Status: PnL -0.02$ (-0.00%) | DCA: 0
+2026-01-22 16:40:34,849 \U0001f691 Doctor: No TP order! Placing...
+2026-01-22 16:40:35,142 \u274c TP fail: bingx {"code":101205,"msg":"No position to close","data":{}}
+2026-01-22 16:40:47,116 \U0001f4c9 Status: PnL -0.32$ (-0.01%) | DCA: 0
+2026-01-22 16:44:14,490 \U0001f680 Hybrid Bot v1.4.2 Started!
+2026-01-22 16:44:14,491 \U0001f4b0 Starting Balance: $3350.01
+2026-01-22 16:44:14,491 \U0001f916 AI Analytics & Chat: ENABLED
+2026-01-22 16:45:04,916 \u23f3 Opening Sell Stage2 (Confluence: 3/7)
+2026-01-22 16:45:05,401 \U0001f4dd Ordering: 0.0016 coins (~7.24$) @ 89584.0
+2026-01-22 16:45:10,310 \U0001f7e2 OPENED: Sell @ 89584.0000
+2026-01-22 16:45:17,070 \u274c TP fail: bingx {"code":101205,"msg":"No position to close","data":{}}
+2026-01-22 16:45:17,857 \U0001f528 DCA placed @ 89111.0000 (Dist: 0.53%)
+2026-01-22 16:45:28,929 \U0001f691 Doctor: No TP order! Placing...
+2026-01-22 16:45:31,225 \u274c TP fail: bingx {"code":101205,"msg":"No position to close","data":{}}
+2026-01-22 16:45:32,013 \U0001f4c9 Status: PnL 0.06$ (0.00%) | DCA: 0
+2026-01-22 16:45:53,260 \U0001f691 Doctor: No TP order! Placing...
+2026-01-22 16:45:55,566 \u274c TP fail: bingx {"code":101205,"msg":"No position to close","data":{}}
+2026-01-22 16:46:07,951 \U0001f4c9 Status: PnL 0.06$ (0.00%) | DCA: 0
+2026-01-22 16:46:17,922 \U0001f691 Doctor: No TP order! Placing...
+2026-01-22 16:46:20,238 \u274c TP fail: bingx {"code":101205,"msg":"No position to close","data":{}}
+2026-01-22 16:46:41,917 \U0001f691 Doctor: No TP order! Placing...
+2026-01-22 16:46:44,224 \u274c TP fail: bingx {"code":101205,"msg":"No position to close","data":{}}
+2026-01-22 16:46:45,016 \U0001f4c9 Status: PnL 0.06$ (0.00%) | DCA: 0
+2026-01-22 16:47:05,953 \U0001f691 Doctor: No TP order! Placing...
+2026-01-22 16:47:08,269 \u274c TP fail: bingx {"code":101205,"msg":"No position to close","data":{}}
+2026-01-22 16:47:20,566 \U0001f4c9 Status: PnL 0.05$ (0.00%) | DCA: 0
+2026-01-22 16:47:30,519 \U0001f691 Doctor: No TP order! Placing...
+2026-01-22 16:47:32,821 \u274c TP fail: bingx {"code":101205,"msg":"No position to close","data":{}}
+2026-01-22 16:47:56,100 \U0001f691 Doctor: No TP order! Placing...
+2026-01-22 16:47:58,412 \u274c TP fail: bingx {"code":101205,"msg":"No position to close","data":{}}
+2026-01-22 16:47:59,202 \U0001f4c9 Status: PnL 0.04$ (0.00%) | DCA: 0
+2026-01-22 16:48:20,071 \U0001f691 Doctor: No TP order! Placing...
+2026-01-22 16:48:22,868 \u274c TP fail: bingx {"code":101205,"msg":"No position to close","data":{}}
+2026-01-22 16:48:34,802 \U0001f4c9 Status: PnL 0.03$ (0.00%) | DCA: 0
+2026-01-22 16:48:44,698 \U0001f691 Doctor: No TP order! Placing...
+2026-01-22 16:48:46,995 \u274c TP fail: bingx {"code":101205,"msg":"No position to close","data":{}}
+2026-01-22 16:49:08,804 \U0001f691 Doctor: No TP order! Placing...
+2026-01-22 16:49:11,110 \u274c TP fail: bingx {"code":101205,"msg":"No position to close","data":{}}
+2026-01-22 16:49:12,385 \U0001f4c9 Status: PnL -0.01$ (-0.00%) | DCA: 0
+2026-01-22 16:49:33,566 \U0001f691 Doctor: No TP order! Placing...
+2026-01-22 16:49:36,356 \u274c TP fail: bingx {"code":101205,"msg":"No position to close","data":{}}
+2026-01-22 16:49:48,792 \U0001f4c9 Status: PnL 0.04$ (0.00%) | DCA: 0
+2026-01-22 16:49:58,837 \U0001f691 Doctor: No TP order! Placing...
+2026-01-22 16:50:01,170 \u274c TP fail: bingx {"code":101205,"msg":"No position to close","data":{}}
+2026-01-22 16:50:23,499 \U0001f691 Doctor: No TP order! Placing...
+2026-01-22 16:50:25,805 \u274c TP fail: bingx {"code":101205,"msg":"No position to close","data":{}}
+2026-01-22 16:50:26,617 \U0001f4c9 Status: PnL -0.00$ (-0.00%) | DCA: 0
+2026-01-22 16:50:47,668 \U0001f691 Doctor: No TP order! Placing...
+2026-01-22 16:50:49,980 \u274c TP fail: bingx {"code":101205,"msg":"No position to close","data":{}}
+2026-01-22 16:51:01,841 \U0001f4c9 Status: PnL 0.02$ (0.00%) | DCA: 0
+2026-01-22 16:51:12,223 \U0001f691 Doctor: No TP order! Placing...
+2026-01-22 16:51:14,520 \u274c TP fail: bingx {"code":101205,"msg":"No position to close","data":{}}
+2026-01-22 16:51:36,339 \U0001f691 Doctor: No TP order! Placing...
+2026-01-22 16:51:38,647 \u274c TP fail: bingx {"code":101205,"msg":"No position to close","data":{}}
+2026-01-22 16:51:39,404 \U0001f4c9 Status: PnL 0.02$ (0.00%) | DCA: 0
+2026-01-22 16:52:00,819 \U0001f691 Doctor: No TP order! Placing...
+2026-01-22 16:52:03,622 \u274c TP fail: bingx {"code":101205,"msg":"No position to close","data":{}}
+2026-01-22 16:52:15,494 \U0001f4c9 Status: PnL 0.00$ (0.00%) | DCA: 0
+2026-01-22 16:52:25,387 \U0001f691 Doctor: No TP order! Placing...
+2026-01-22 16:52:28,200 \u274c TP fail: bingx {"code":101205,"msg":"No position to close","data":{}}
+2026-01-22 16:52:50,946 \U0001f691 Doctor: No TP order! Placing...
+2026-01-22 16:52:53,240 \u274c TP fail: bingx {"code":101205,"msg":"No position to close","data":{}}
+2026-01-22 16:52:54,037 \U0001f4c9 Status: PnL -0.09$ (-0.00%) | DCA: 0
+2026-01-22 16:53:15,270 \U0001f691 Doctor: No TP order! Placing...
+2026-01-22 16:53:17,578 \u274c TP fail: bingx {"code":101205,"msg":"No position to close","data":{}}
+2026-01-22 16:53:29,872 \U0001f4c9 Status: PnL -0.22$ (-0.01%) | DCA: 0
+2026-01-22 16:53:39,762 \U0001f691 Doctor: No TP order! Placing...
+2026-01-22 16:53:42,092 \u274c TP fail: bingx {"code":101205,"msg":"No position to close","data":{}}
+2026-01-22 16:54:05,398 \U0001f691 Doctor: No TP order! Placing...
+2026-01-22 16:54:07,726 \u274c TP fail: bingx {"code":101205,"msg":"No position to close","data":{}}
+2026-01-22 16:54:08,997 \U0001f4c9 Status: PnL -0.19$ (-0.01%) | DCA: 0
+2026-01-22 16:54:30,360 \U0001f691 Doctor: No TP order! Placing...
+2026-01-22 16:54:32,704 \u274c TP fail: bingx {"code":101205,"msg":"No position to close","data":{}}
+2026-01-22 16:54:44,894 \U0001f4c9 Status: PnL -0.08$ (-0.00%) | DCA: 0
+2026-01-22 16:54:54,794 \U0001f691 Doctor: No TP order! Placing...
+2026-01-22 16:54:57,101 \u274c TP fail: bingx {"code":101205,"msg":"No position to close","data":{}}
+2026-01-22 16:55:20,057 \U0001f691 Doctor: No TP order! Placing...
+2026-01-22 16:55:22,352 \u274c TP fail: bingx {"code":101205,"msg":"No position to close","data":{}}
+2026-01-22 16:55:23,605 \U0001f4c9 Status: PnL -0.08$ (-0.00%) | DCA: 0
+2026-01-22 16:55:44,452 \U0001f691 Doctor: No TP order! Placing...
+2026-01-22 16:55:46,756 \u274c TP fail: bingx {"code":101205,"msg":"No position to close","data":{}}
+2026-01-22 16:55:59,634 \U0001f4c9 Status: PnL -0.05$ (-0.00%) | DCA: 0
+2026-01-22 16:56:09,524 \U0001f691 Doctor: No TP order! Placing...
+2026-01-22 16:56:11,846 \u274c TP fail: bingx {"code":101205,"msg":"No position to close","data":{}}
+2026-01-22 16:56:33,623 \U0001f691 Doctor: No TP order! Placing...
+2026-01-22 16:56:35,920 \u274c TP fail: bingx {"code":101205,"msg":"No position to close","data":{}}
+2026-01-22 16:56:36,697 \U0001f4c9 Status: PnL 0.01$ (0.00%) | DCA: 0
+2026-01-22 16:56:57,607 \U0001f691 Doctor: No TP order! Placing...
+2026-01-22 16:56:59,892 \u274c TP fail: bingx {"code":101205,"msg":"No position to close","data":{}}
+2026-01-22 16:57:11,657 \U0001f4c9 Status: PnL 0.03$ (0.00%) | DCA: 0
+2026-01-22 16:57:13,009 \U0001f528 DCA placed @ 89154.0000 (Dist: 0.48%)
+2026-01-22 16:57:23,125 \U0001f691 Doctor: No TP order! Placing...
+2026-01-22 16:57:25,935 \u274c TP fail: bingx {"code":101205,"msg":"No position to close","data":{}}
+2026-01-22 16:57:48,212 \U0001f691 Doctor: No TP order! Placing...
+2026-01-22 16:57:50,523 \u274c TP fail: bingx {"code":101205,"msg":"No position to close","data":{}}
+2026-01-22 16:57:51,328 \U0001f4c9 Status: PnL 0.05$ (0.00%) | DCA: 0
+2026-01-22 16:58:12,227 \U0001f691 Doctor: No TP order! Placing...
+2026-01-22 16:58:14,520 \u274c TP fail: bingx {"code":101205,"msg":"No position to close","data":{}}
+2026-01-22 16:58:26,869 \U0001f4c9 Status: PnL -0.08$ (-0.00%) | DCA: 0
+2026-01-22 16:58:36,722 \U0001f691 Doctor: No TP order! Placing...
+2026-01-22 16:58:39,045 \u274c TP fail: bingx {"code":101205,"msg":"No position to close","data":{}}
+2026-01-22 16:59:01,632 \U0001f691 Doctor: No TP order! Placing...
+2026-01-22 16:59:04,410 \u274c TP fail: bingx {"code":101205,"msg":"No position to close","data":{}}
+2026-01-22 16:59:05,197 \U0001f4c9 Status: PnL -0.05$ (-0.00%) | DCA: 0
+2026-01-22 16:59:27,021 \U0001f691 Doctor: No TP order! Placing...
+2026-01-22 16:59:29,319 \u274c TP fail: bingx {"code":101205,"msg":"No position to close","data":{}}
+2026-01-22 16:59:41,200 \U0001f4c9 Status: PnL -0.01$ (-0.00%) | DCA: 0
+2026-01-22 16:59:51,036 \U0001f691 Doctor: No TP order! Placing...
+2026-01-22 16:59:53,382 \u274c TP fail: bingx {"code":101205,"msg":"No position to close","data":{}}
+2026-01-22 17:00:16,194 \U0001f691 Doctor: No TP order! Placing...
+2026-01-22 17:00:18,988 \u274c TP fail: bingx {"code":101205,"msg":"No position to close","data":{}}
+2026-01-22 17:00:20,319 \U0001f4c9 Status: PnL -0.02$ (-0.00%) | DCA: 0
+2026-01-22 17:00:41,304 \U0001f691 Doctor: No TP order! Placing...
+2026-01-22 17:00:44,133 \u274c TP fail: bingx {"code":101205,"msg":"No position to close","data":{}}
+2026-01-22 17:00:56,067 \U0001f4c9 Status: PnL -0.07$ (-0.00%) | DCA: 0
+2026-01-22 17:01:06,447 \U0001f691 Doctor: No TP order! Placing...
+2026-01-22 17:01:08,741 \u274c TP fail: bingx {"code":101205,"msg":"No position to close","data":{}}
+2026-01-22 17:01:31,164 \U0001f691 Doctor: No TP order! Placing...
+2026-01-22 17:01:33,955 \u274c TP fail: bingx {"code":101205,"msg":"No position to close","data":{}}
+2026-01-22 17:01:34,744 \U0001f4c9 Status: PnL -0.12$ (-0.00%) | DCA: 0
+2026-01-22 17:01:55,875 \U0001f691 Doctor: No TP order! Placing...
+2026-01-22 17:01:58,187 \u274c TP fail: bingx {"code":101205,"msg":"No position to close","data":{}}
+2026-01-22 17:02:10,259 \U0001f4c9 Status: PnL -0.17$ (-0.01%) | DCA: 0
+2026-01-22 17:02:20,164 \U0001f691 Doctor: No TP order! Placing...
+2026-01-22 17:02:22,961 \u274c TP fail: bingx {"code":101205,"msg":"No position to close","data":{}}
+2026-01-22 17:02:45,066 \U0001f691 Doctor: No TP order! Placing...
+2026-01-22 17:02:47,394 \u274c TP fail: bingx {"code":101205,"msg":"No position to close","data":{}}
+2026-01-22 17:02:48,694 \U0001f4c9 Status: PnL -0.26$ (-0.01%) | DCA: 0
+2026-01-22 17:03:10,194 \U0001f691 Doctor: No TP order! Placing...
+2026-01-22 17:03:12,523 \u274c TP fail: bingx {"code":101205,"msg":"No position to close","data":{}}
+2026-01-22 17:03:24,360 \U0001f4c9 Status: PnL -0.19$ (-0.01%) | DCA: 0
+2026-01-22 17:03:34,215 \U0001f691 Doctor: No TP order! Placing...
+2026-01-22 17:03:36,505 \u274c TP fail: bingx {"code":101205,"msg":"No position to close","data":{}}
+2026-01-22 17:03:58,267 \U0001f691 Doctor: No TP order! Placing...
+2026-01-22 17:04:00,603 \u274c TP fail: bingx {"code":101205,"msg":"No position to close","data":{}}
+2026-01-22 17:04:01,414 \U0001f4c9 Status: PnL -0.18$ (-0.01%) | DCA: 0
+2026-01-22 17:04:22,444 \U0001f691 Doctor: No TP order! Placing...
+2026-01-22 17:04:25,235 \u274c TP fail: bingx {"code":101205,"msg":"No position to close","data":{}}
+2026-01-22 17:04:37,043 \U0001f4c9 Status: PnL -0.14$ (-0.00%) | DCA: 0
+2026-01-22 17:04:46,895 \U0001f691 Doctor: No TP order! Placing...
+2026-01-22 17:04:49,206 \u274c TP fail: bingx {"code":101205,"msg":"No position to close","data":{}}
+2026-01-22 17:05:12,007 \U0001f691 Doctor: No TP order! Placing...
+2026-01-22 17:05:14,830 \u274c TP fail: bingx {"code":101205,"msg":"No position to close","data":{}}
+2026-01-22 17:05:15,860 \U0001f4c9 Status: PnL -0.17$ (-0.00%) | DCA: 0
+2026-01-22 17:05:36,755 \U0001f691 Doctor: No TP order! Placing...
+2026-01-22 17:05:39,067 \u274c TP fail: bingx {"code":101205,"msg":"No position to close","data":{}}
+2026-01-22 17:05:50,889 \U0001f4c9 Status: PnL -0.08$ (-0.00%) | DCA: 0
+2026-01-22 17:06:00,738 \U0001f691 Doctor: No TP order! Placing...
+2026-01-22 17:06:03,109 \u274c TP fail: bingx {"code":101205,"msg":"No position to close","data":{}}
+2026-01-22 17:06:25,390 \U0001f691 Doctor: No TP order! Placing...
+2026-01-22 17:06:27,743 \u274c TP fail: bingx {"code":101205,"msg":"No position to close","data":{}}
+2026-01-22 17:06:28,556 \U0001f4c9 Status: PnL -0.13$ (-0.00%) | DCA: 0
+2026-01-22 17:06:49,952 \U0001f691 Doctor: No TP order! Placing...
+2026-01-22 17:06:52,271 \u274c TP fail: bingx {"code":101205,"msg":"No position to close","data":{}}
+2026-01-22 17:07:04,680 \U0001f4c9 Status: PnL -0.17$ (-0.00%) | DCA: 0
+2026-01-22 17:07:14,991 \U0001f691 Doctor: No TP order! Placing...
+2026-01-22 17:07:17,342 \u274c TP fail: bingx {"code":101205,"msg":"No position to close","data":{}}
+2026-01-22 17:07:39,590 \U0001f691 Doctor: No TP order! Placing...
+2026-01-22 17:07:41,897 \u274c TP fail: bingx {"code":101205,"msg":"No position to close","data":{}}
+2026-01-22 17:07:42,714 \U0001f4c9 Status: PnL -0.13$ (-0.00%) | DCA: 0
+2026-01-22 17:08:04,141 \U0001f691 Doctor: No TP order! Placing...
+2026-01-22 17:08:06,449 \u274c TP fail: bingx {"code":101205,"msg":"No position to close","data":{}}
+2026-01-22 17:08:18,248 \U0001f4c9 Status: PnL -0.13$ (-0.00%) | DCA: 0
+2026-01-22 17:08:28,636 \U0001f691 Doctor: No TP order! Placing...
+2026-01-22 17:08:30,937 \u274c TP fail: bingx {"code":101205,"msg":"No position to close","data":{}}
+2026-01-22 17:08:52,489 \U0001f691 Doctor: No TP order! Placing...
+2026-01-22 17:08:54,798 \u274c TP fail: bingx {"code":101205,"msg":"No position to close","data":{}}
+2026-01-22 17:08:55,573 \U0001f4c9 Status: PnL -0.18$ (-0.01%) | DCA: 0
+2026-01-22 17:09:16,643 \U0001f691 Doctor: No TP order! Placing...
+2026-01-22 17:09:18,965 \u274c TP fail: bingx {"code":101205,"msg":"No position to close","data":{}}
+2026-01-22 17:09:19,539 \U0001f528 DCA placed @ 89111.0000 (Dist: 0.53%)
+2026-01-22 17:09:31,064 \U0001f4c9 Status: PnL -0.15$ (-0.00%) | DCA: 0
+2026-01-22 17:09:40,904 \U0001f691 Doctor: No TP order! Placing...
+2026-01-22 17:09:43,699 \u274c TP fail: bingx {"code":101205,"msg":"No position to close","data":{}}
+2026-01-22 17:10:06,498 \U0001f691 Doctor: No TP order! Placing...
+2026-01-22 17:10:08,836 \u274c TP fail: bingx {"code":101205,"msg":"No position to close","data":{}}
+2026-01-22 17:10:09,610 \U0001f4c9 Status: PnL -0.14$ (-0.00%) | DCA: 0
+2026-01-22 17:10:31,137 \U0001f691 Doctor: No TP order! Placing...
+2026-01-22 17:10:33,704 \u274c TP fail: bingx {"code":101205,"msg":"No position to close","data":{}}
+2026-01-22 17:10:45,681 \U0001f4c9 Status: PnL -0.19$ (-0.01%) | DCA: 0
+2026-01-22 17:10:55,529 \U0001f691 Doctor: No TP order! Placing...
+2026-01-22 17:10:57,854 \u274c TP fail: bingx {"code":101205,"msg":"No position to close","data":{}}
+2026-01-22 17:11:20,206 \U0001f691 Doctor: No TP order! Placing...
+2026-01-22 17:11:22,539 \u274c TP fail: bingx {"code":101205,"msg":"No position to close","data":{}}
+2026-01-22 17:11:23,328 \U0001f4c9 Status: PnL -0.10$ (-0.00%) | DCA: 0
+2026-01-22 17:11:44,245 \U0001f691 Doctor: No TP order! Placing...
+2026-01-22 17:11:46,549 \u274c TP fail: bingx {"code":101205,"msg":"No position to close","data":{}}
+2026-01-22 17:11:58,812 \U0001f4c9 Status: PnL -0.08$ (-0.00%) | DCA: 0
+2026-01-22 17:12:08,708 \U0001f691 Doctor: No TP order! Placing...
+2026-01-22 17:12:11,015 \u274c TP fail: bingx {"code":101205,"msg":"No position to close","data":{}}
+2026-01-22 17:12:33,527 \U0001f691 Doctor: No TP order! Placing...
+2026-01-22 17:12:35,831 \u274c TP fail: bingx {"code":101205,"msg":"No position to close","data":{}}
+2026-01-22 17:12:36,617 \U0001f4c9 Status: PnL -0.05$ (-0.00%) | DCA: 0
+2026-01-22 17:12:57,618 \U0001f691 Doctor: No TP order! Placing...
+2026-01-22 17:12:59,925 \u274c TP fail: bingx {"code":101205,"msg":"No position to close","data":{}}
+2026-01-22 17:13:11,834 \U0001f4c9 Status: PnL 0.07$ (0.00%) | DCA: 0
+2026-01-22 17:13:21,735 \U0001f691 Doctor: No TP order! Placing...
+2026-01-22 17:13:24,055 \u274c TP fail: bingx {"code":101205,"msg":"No position to close","data":{}}
+2026-01-22 17:13:46,445 \U0001f691 Doctor: No TP order! Placing...
+2026-01-22 17:13:49,234 \u274c TP fail: bingx {"code":101205,"msg":"No position to close","data":{}}
+2026-01-22 17:13:50,501 \U0001f4c9 Status: PnL 0.01$ (0.00%) | DCA: 0
+2026-01-22 17:14:12,015 \U0001f691 Doctor: No TP order! Placing...
+2026-01-22 17:14:14,337 \u274c TP fail: bingx {"code":101205,"msg":"No position to close","data":{}}
+2026-01-22 17:14:26,141 \U0001f4c9 Status: PnL 0.06$ (0.00%) | DCA: 0
+2026-01-22 17:14:35,987 \U0001f691 Doctor: No TP order! Placing...
+2026-01-22 17:14:38,279 \u274c TP fail: bingx {"code":101205,"msg":"No position to close","data":{}}
+2026-01-22 17:15:00,457 \U0001f691 Doctor: No TP order! Placing...
+2026-01-22 17:15:03,255 \u274c TP fail: bingx {"code":101205,"msg":"No position to close","data":{}}
+2026-01-22 17:15:04,590 \U0001f4c9 Status: PnL 0.11$ (0.00%) | DCA: 0
+2026-01-22 17:15:25,554 \U0001f691 Doctor: No TP order! Placing...
+2026-01-22 17:15:27,865 \u274c TP fail: bingx {"code":101205,"msg":"No position to close","data":{}}
+2026-01-22 17:15:40,268 \U0001f4c9 Status: PnL 0.11$ (0.00%) | DCA: 0
+2026-01-22 17:15:50,106 \U0001f691 Doctor: No TP order! Placing...
+2026-01-22 17:15:52,419 \u274c TP fail: bingx {"code":101205,"msg":"No position to close","data":{}}
+2026-01-22 17:16:14,170 \U0001f691 Doctor: No TP order! Placing...
+2026-01-22 17:16:16,465 \u274c TP fail: bingx {"code":101205,"msg":"No position to close","data":{}}
+2026-01-22 17:16:17,257 \U0001f4c9 Status: PnL 0.08$ (0.00%) | DCA: 0
+2026-01-22 17:16:38,732 \U0001f691 Doctor: No TP order! Placing...
+2026-01-22 17:16:41,056 \u274c TP fail: bingx {"code":101205,"msg":"No position to close","data":{}}
+2026-01-22 17:16:52,859 \U0001f4c9 Status: PnL 0.04$ (0.00%) | DCA: 0
+2026-01-22 17:17:02,773 \U0001f691 Doctor: No TP order! Placing...
+2026-01-22 17:17:05,107 \u274c TP fail: bingx {"code":101205,"msg":"No position to close","data":{}}
+2026-01-22 17:17:27,475 \U0001f691 Doctor: No TP order! Placing...
+2026-01-22 17:17:30,284 \u274c TP fail: bingx {"code":101205,"msg":"No position to close","data":{}}
+2026-01-22 17:17:31,074 \U0001f4c9 Status: PnL 0.04$ (0.00%) | DCA: 0
+2026-01-22 17:17:52,567 \U0001f691 Doctor: No TP order! Placing...
+2026-01-22 17:17:54,885 \u274c TP fail: bingx {"code":101205,"msg":"No position to close","data":{}}
+2026-01-22 17:18:07,073 \U0001f4c9 Status: PnL 0.03$ (0.00%) | DCA: 0
+2026-01-22 17:18:17,480 \U0001f691 Doctor: No TP order! Placing...
+2026-01-22 17:18:19,796 \u274c TP fail: bingx {"code":101205,"msg":"No position to close","data":{}}
+2026-01-22 17:18:41,964 \U0001f691 Doctor: No TP order! Placing...
+2026-01-22 17:18:44,259 \u274c TP fail: bingx {"code":101205,"msg":"No position to close","data":{}}
+2026-01-22 17:18:45,028 \U0001f4c9 Status: PnL 0.07$ (0.00%) | DCA: 0
+2026-01-22 17:19:06,099 \U0001f691 Doctor: No TP order! Placing...
+2026-01-22 17:19:08,418 \u274c TP fail: bingx {"code":101205,"msg":"No position to close","data":{}}
+2026-01-22 17:19:20,781 \U0001f4c9 Status: PnL 0.08$ (0.00%) | DCA: 0
+2026-01-22 17:19:30,663 \U0001f691 Doctor: No TP order! Placing...
+2026-01-22 17:19:32,968 \u274c TP fail: bingx {"code":101205,"msg":"No position to close","data":{}}
+2026-01-22 17:19:54,787 \U0001f691 Doctor: No TP order! Placing...
+2026-01-22 17:19:57,132 \u274c TP fail: bingx {"code":101205,"msg":"No position to close","data":{}}
+2026-01-22 17:19:58,081 \U0001f4c9 Status: PnL -0.00$ (-0.00%) | DCA: 0
+2026-01-22 17:20:19,641 \U0001f691 Doctor: No TP order! Placing...
+2026-01-22 17:20:21,934 \u274c TP fail: bingx {"code":101205,"msg":"No position to close","data":{}}
+2026-01-22 17:20:34,304 \U0001f4c9 Status: PnL -0.16$ (-0.00%) | DCA: 0
+2026-01-22 17:20:44,640 \U0001f691 Doctor: No TP order! Placing...
+2026-01-22 17:20:47,479 \u274c TP fail: bingx {"code":101205,"msg":"No position to close","data":{}}
+2026-01-22 17:21:09,195 \U0001f691 Doctor: No TP order! Placing...
+2026-01-22 17:21:11,537 \u274c TP fail: bingx {"code":101205,"msg":"No position to close","data":{}}
+2026-01-22 17:21:12,324 \U0001f4c9 Status: PnL -0.10$ (-0.00%) | DCA: 0
+2026-01-22 17:21:33,291 \U0001f691 Doctor: No TP order! Placing...
+2026-01-22 17:21:35,616 \u274c TP fail: bingx {"code":101205,"msg":"No position to close","data":{}}
+2026-01-22 17:21:48,015 \U0001f4c9 Status: PnL -0.24$ (-0.01%) | DCA: 0
+2026-01-22 17:21:57,938 \U0001f691 Doctor: No TP order! Placing...
+2026-01-22 17:22:00,784 \u274c TP fail: bingx {"code":101205,"msg":"No position to close","data":{}}
+2026-01-22 17:22:23,077 \U0001f691 Doctor: No TP order! Placing...
+2026-01-22 17:22:25,410 \u274c TP fail: bingx {"code":101205,"msg":"No position to close","data":{}}
+2026-01-22 17:22:26,198 \U0001f4c9 Status: PnL -0.26$ (-0.01%) | DCA: 0
+2026-01-22 17:22:47,013 \U0001f691 Doctor: No TP order! Placing...
+2026-01-22 17:22:49,345 \u274c TP fail: bingx {"code":101205,"msg":"No position to close","data":{}}
+2026-01-22 17:23:01,738 \U0001f4c9 Status: PnL -0.27$ (-0.01%) | DCA: 0
+2026-01-22 17:23:11,629 \U0001f691 Doctor: No TP order! Placing...
+2026-01-22 17:23:13,959 \u274c TP fail: bingx {"code":101205,"msg":"No position to close","data":{}}
+2026-01-22 17:23:37,399 \U0001f691 Doctor: No TP order! Placing...
+2026-01-22 17:23:39,713 \u274c TP fail: bingx {"code":101205,"msg":"No position to close","data":{}}
+2026-01-22 17:23:40,482 \U0001f4c9 Status: PnL -0.31$ (-0.01%) | DCA: 0
+2026-01-22 17:24:01,523 \U0001f691 Doctor: No TP order! Placing...
+2026-01-22 17:24:03,858 \u274c TP fail: bingx {"code":101205,"msg":"No position to close","data":{}}
+2026-01-22 17:24:16,628 \U0001f4c9 Status: PnL -0.24$ (-0.01%) | DCA: 0
+2026-01-22 17:24:26,509 \U0001f691 Doctor: No TP order! Placing...
+2026-01-22 17:24:28,809 \u274c TP fail: bingx {"code":101205,"msg":"No position to close","data":{}}
+2026-01-22 17:24:51,081 \U0001f691 Doctor: No TP order! Placing...
+2026-01-22 17:24:53,391 \u274c TP fail: bingx {"code":101205,"msg":"No position to close","data":{}}
+2026-01-22 17:24:54,213 \U0001f4c9 Status: PnL -0.32$ (-0.01%) | DCA: 0
+2026-01-22 17:25:15,770 \U0001f691 Doctor: No TP order! Placing...
+2026-01-22 17:25:18,086 \u274c TP fail: bingx {"code":101205,"msg":"No position to close","data":{}}
+2026-01-22 17:25:30,408 \U0001f4c9 Status: PnL -0.23$ (-0.01%) | DCA: 0
+2026-01-22 17:25:40,716 \U0001f691 Doctor: No TP order! Placing...
+2026-01-22 17:25:43,519 \u274c TP fail: bingx {"code":101205,"msg":"No position to close","data":{}}
+2026-01-22 17:26:05,683 \U0001f691 Doctor: No TP order! Placing...
+2026-01-22 17:26:08,434 \u274c TP fail: bingx {"code":101205,"msg":"No position to close","data":{}}
+2026-01-22 17:26:09,733 \U0001f4c9 Status: PnL -0.17$ (-0.01%) | DCA: 0
+2026-01-22 17:26:30,615 \U0001f691 Doctor: No TP order! Placing...
+2026-01-22 17:26:32,926 \u274c TP fail: bingx {"code":101205,"msg":"No position to close","data":{}}
+2026-01-22 17:26:45,323 \U0001f4c9 Status: PnL -0.12$ (-0.00%) | DCA: 0
+2026-01-22 17:26:55,675 \U0001f691 Doctor: No TP order! Placing...
+2026-01-22 17:26:58,463 \u274c TP fail: bingx {"code":101205,"msg":"No position to close","data":{}}
+2026-01-22 17:27:20,516 \U0001f691 Doctor: No TP order! Placing...
+2026-01-22 17:27:22,828 \u274c TP fail: bingx {"code":101205,"msg":"No position to close","data":{}}
+2026-01-22 17:27:23,608 \U0001f4c9 Status: PnL -0.11$ (-0.00%) | DCA: 0
+2026-01-22 17:27:44,962 \U0001f691 Doctor: No TP order! Placing...
+2026-01-22 17:27:47,272 \u274c TP fail: bingx {"code":101205,"msg":"No position to close","data":{}}
+2026-01-22 17:27:59,624 \U0001f4c9 Status: PnL -0.10$ (-0.00%) | DCA: 0
+2026-01-22 17:28:09,544 \U0001f691 Doctor: No TP order! Placing...
+2026-01-22 17:28:11,835 \u274c TP fail: bingx {"code":101205,"msg":"No position to close","data":{}}
+2026-01-22 17:28:33,567 \U0001f691 Doctor: No TP order! Placing...
+2026-01-22 17:28:35,863 \u274c TP fail: bingx {"code":101205,"msg":"No position to close","data":{}}
+2026-01-22 17:28:36,702 \U0001f4c9 Status: PnL -0.12$ (-0.00%) | DCA: 0
+2026-01-22 17:28:57,618 \U0001f691 Doctor: No TP order! Placing...
+2026-01-22 17:28:59,931 \u274c TP fail: bingx {"code":101205,"msg":"No position to close","data":{}}
+2026-01-22 17:29:12,393 \U0001f4c9 Status: PnL -0.10$ (-0.00%) | DCA: 0
+2026-01-22 17:29:22,298 \U0001f691 Doctor: No TP order! Placing...
+2026-01-22 17:29:24,595 \u274c TP fail: bingx {"code":101205,"msg":"No position to close","data":{}}
+2026-01-22 17:29:47,003 \U0001f691 Doctor: No TP order! Placing...
+2026-01-22 17:29:49,815 \u274c TP fail: bingx {"code":101205,"msg":"No position to close","data":{}}
+2026-01-22 17:29:50,673 \U0001f4c9 Status: PnL -0.08$ (-0.00%) | DCA: 0
+2026-01-22 17:30:14,576 \U0001f691 Doctor: No TP order! Placing...
+2026-01-22 17:30:16,914 \u274c TP fail: bingx {"code":101205,"msg":"No position to close","data":{}}
+2026-01-22 17:30:29,761 \U0001f4c9 Status: PnL -0.04$ (-0.00%) | DCA: 0
+2026-01-22 17:30:39,650 \U0001f691 Doctor: No TP order! Placing...
+2026-01-22 17:30:41,949 \u274c TP fail: bingx {"code":101205,"msg":"No position to close","data":{}}
+2026-01-22 17:31:03,861 \U0001f691 Doctor: No TP order! Placing...
+2026-01-22 17:31:06,191 \u274c TP fail: bingx {"code":101205,"msg":"No position to close","data":{}}
+2026-01-22 17:31:06,973 \U0001f4c9 Status: PnL -0.01$ (-0.00%) | DCA: 0
+2026-01-22 17:31:28,961 \U0001f691 Doctor: No TP order! Placing...
+2026-01-22 17:31:31,307 \u274c TP fail: bingx {"code":101205,"msg":"No position to close","data":{}}
+2026-01-22 17:31:43,626 \U0001f4c9 Status: PnL -0.07$ (-0.00%) | DCA: 0
+2026-01-22 17:31:53,588 \U0001f691 Doctor: No TP order! Placing...
+2026-01-22 17:31:56,391 \u274c TP fail: bingx {"code":101205,"msg":"No position to close","data":{}}
+2026-01-22 17:32:18,411 \U0001f691 Doctor: No TP order! Placing...
+2026-01-22 17:32:20,768 \u274c TP fail: bingx {"code":101205,"msg":"No position to close","data":{}}
+2026-01-22 17:32:21,596 \U0001f4c9 Status: PnL -0.17$ (-0.01%) | DCA: 0
+2026-01-22 17:32:42,551 \U0001f691 Doctor: No TP order! Placing...
+2026-01-22 17:32:44,848 \u274c TP fail: bingx {"code":101205,"msg":"No position to close","data":{}}
+2026-01-22 17:32:56,640 \U0001f4c9 Status: PnL -0.17$ (-0.00%) | DCA: 0
+2026-01-22 17:33:06,520 \U0001f691 Doctor: No TP order! Placing...
+2026-01-22 17:33:08,842 \u274c TP fail: bingx {"code":101205,"msg":"No position to close","data":{}}
+2026-01-22 17:33:30,588 \U0001f691 Doctor: No TP order! Placing...
+2026-01-22 17:33:32,937 \u274c TP fail: bingx {"code":101205,"msg":"No position to close","data":{}}
+2026-01-22 17:33:34,206 \U0001f4c9 Status: PnL -0.13$ (-0.00%) | DCA: 0
+2026-01-22 17:33:55,067 \U0001f691 Doctor: No TP order! Placing...
+2026-01-22 17:33:57,366 \u274c TP fail: bingx {"code":101205,"msg":"No position to close","data":{}}
+2026-01-22 17:34:09,718 \U0001f4c9 Status: PnL -0.20$ (-0.01%) | DCA: 0
+2026-01-22 17:34:19,575 \U0001f691 Doctor: No TP order! Placing...
+2026-01-22 17:34:21,867 \u274c TP fail: bingx {"code":101205,"msg":"No position to close","data":{}}
+2026-01-22 17:34:44,054 \U0001f691 Doctor: No TP order! Placing...
+2026-01-22 17:34:46,368 \u274c TP fail: bingx {"code":101205,"msg":"No position to close","data":{}}
+2026-01-22 17:34:47,752 \U0001f4c9 Status: PnL -0.05$ (-0.00%) | DCA: 0
+2026-01-22 17:35:09,204 \U0001f691 Doctor: No TP order! Placing...
+2026-01-22 17:35:11,773 \u274c TP fail: bingx {"code":101205,"msg":"No position to close","data":{}}
+2026-01-22 17:35:24,105 \U0001f4c9 Status: PnL -0.33$ (-0.01%) | DCA: 0
+2026-01-22 17:35:33,967 \U0001f691 Doctor: No TP order! Placing...
+2026-01-22 17:35:36,288 \u274c TP fail: bingx {"code":101205,"msg":"No position to close","data":{}}
+2026-01-22 17:35:58,465 \U0001f691 Doctor: No TP order! Placing...
+2026-01-22 17:36:00,953 \u274c TP fail: bingx {"code":101205,"msg":"No position to close","data":{}}
+2026-01-22 17:36:02,295 \U0001f4c9 Status: PnL -0.51$ (-0.02%) | DCA: 0
+2026-01-22 17:36:23,400 \U0001f691 Doctor: No TP order! Placing...
+2026-01-22 17:36:25,736 \u274c TP fail: bingx {"code":101205,"msg":"No position to close","data":{}}
+2026-01-22 17:36:27,181 \U0001f528 DCA placed @ 88652.3000 (Dist: 1.04%)
+2026-01-22 17:36:39,281 \U0001f4c9 Status: PnL -0.51$ (-0.02%) | DCA: 0
+2026-01-22 17:36:49,228 \U0001f691 Doctor: No TP order! Placing...
+2026-01-22 17:36:51,533 \u274c TP fail: bingx {"code":101205,"msg":"No position to close","data":{}}
+2026-01-22 17:37:13,804 \U0001f691 Doctor: No TP order! Placing...
+2026-01-22 17:37:16,623 \u274c TP fail: bingx {"code":101205,"msg":"No position to close","data":{}}
+2026-01-22 17:37:17,403 \U0001f4c9 Status: PnL -0.60$ (-0.02%) | DCA: 0
+2026-01-22 17:37:38,870 \U0001f691 Doctor: No TP order! Placing...
+2026-01-22 17:37:41,189 \u274c TP fail: bingx {"code":101205,"msg":"No position to close","data":{}}
+2026-01-22 17:37:53,163 \U0001f4c9 Status: PnL -0.50$ (-0.02%) | DCA: 0
+2026-01-22 17:38:03,050 \U0001f691 Doctor: No TP order! Placing...
+2026-01-22 17:38:05,339 \u274c TP fail: bingx {"code":101205,"msg":"No position to close","data":{}}
+2026-01-22 17:38:06,233 \U0001f528 DCA placed @ 89154.0000 (Dist: 0.48%)
+2026-01-22 17:38:27,904 \U0001f691 Doctor: No TP order! Placing...
+2026-01-22 17:38:30,205 \u274c TP fail: bingx {"code":101205,"msg":"No position to close","data":{}}
+2026-01-22 17:38:31,051 \U0001f4c9 Status: PnL -0.27$ (-0.01%) | DCA: 0
+2026-01-22 17:38:51,980 \U0001f691 Doctor: No TP order! Placing...
+2026-01-22 17:38:54,310 \u274c TP fail: bingx {"code":101205,"msg":"No position to close","data":{}}
+2026-01-22 17:39:06,189 \U0001f4c9 Status: PnL 0.08$ (0.00%) | DCA: 0
+2026-01-22 17:39:16,045 \U0001f691 Doctor: No TP order! Placing...
+2026-01-22 17:39:18,364 \u274c TP fail: bingx {"code":101205,"msg":"No position to close","data":{}}
+2026-01-22 17:39:40,066 \U0001f691 Doctor: No TP order! Placing...
+2026-01-22 17:39:42,359 \u274c TP fail: bingx {"code":101205,"msg":"No position to close","data":{}}
+2026-01-22 17:39:44,158 \U0001f4c9 Status: PnL -0.02$ (-0.00%) | DCA: 0
+2026-01-22 17:40:05,631 \U0001f691 Doctor: No TP order! Placing...
+2026-01-22 17:40:07,956 \u274c TP fail: bingx {"code":101205,"msg":"No position to close","data":{}}
+2026-01-22 17:40:20,305 \U0001f4c9 Status: PnL 0.06$ (0.00%) | DCA: 0
+2026-01-22 17:40:30,188 \U0001f691 Doctor: No TP order! Placing...
+2026-01-22 17:40:32,492 \u274c TP fail: bingx {"code":101205,"msg":"No position to close","data":{}}
+2026-01-22 17:40:54,327 \U0001f691 Doctor: No TP order! Placing...
+2026-01-22 17:40:57,124 \u274c TP fail: bingx {"code":101205,"msg":"No position to close","data":{}}
+2026-01-22 17:40:57,911 \U0001f4c9 Status: PnL 0.08$ (0.00%) | DCA: 0
+2026-01-22 17:41:18,768 \U0001f691 Doctor: No TP order! Placing...
+2026-01-22 17:41:21,085 \u274c TP fail: bingx {"code":101205,"msg":"No position to close","data":{}}
+2026-01-22 17:41:32,947 \U0001f4c9 Status: PnL 0.02$ (0.00%) | DCA: 0
+2026-01-22 17:41:42,786 \U0001f691 Doctor: No TP order! Placing...
+2026-01-22 17:41:45,084 \u274c TP fail: bingx {"code":101205,"msg":"No position to close","data":{}}
+2026-01-22 17:42:07,281 \U0001f691 Doctor: No TP order! Placing...
+2026-01-22 17:42:09,613 \u274c TP fail: bingx {"code":101205,"msg":"No position to close","data":{}}
+2026-01-22 17:42:10,390 \U0001f4c9 Status: PnL -0.14$ (-0.00%) | DCA: 0
+2026-01-22 17:42:31,264 \U0001f691 Doctor: No TP order! Placing...
+2026-01-22 17:42:33,571 \u274c TP fail: bingx {"code":101205,"msg":"No position to close","data":{}}
+2026-01-22 17:42:46,206 \U0001f4c9 Status: PnL -0.19$ (-0.01%) | DCA: 0
+2026-01-22 17:42:57,122 \U0001f691 Doctor: No TP order! Placing...
+2026-01-22 17:42:59,451 \u274c TP fail: bingx {"code":101205,"msg":"No position to close","data":{}}
+2026-01-22 17:43:22,272 \U0001f691 Doctor: No TP order! Placing...
+2026-01-22 17:43:24,574 \u274c TP fail: bingx {"code":101205,"msg":"No position to close","data":{}}
+2026-01-22 17:43:25,153 \U0001f528 DCA placed @ 88867.3000 (Dist: 0.80%)
+2026-01-22 17:43:26,147 \U0001f4c9 Status: PnL -0.27$ (-0.01%) | DCA: 0
+2026-01-22 17:43:47,255 \U0001f691 Doctor: No TP order! Placing...
+2026-01-22 17:43:49,584 \u274c TP fail: bingx {"code":101205,"msg":"No position to close","data":{}}
+2026-01-22 17:44:01,884 \U0001f4c9 Status: PnL -0.35$ (-0.01%) | DCA: 0
+2026-01-22 17:44:12,291 \U0001f691 Doctor: No TP order! Placing...
+2026-01-22 17:44:14,618 \u274c TP fail: bingx {"code":101205,"msg":"No position to close","data":{}}
+2026-01-22 17:44:38,027 \U0001f691 Doctor: No TP order! Placing...
+2026-01-22 17:44:40,333 \u274c TP fail: bingx {"code":101205,"msg":"No position to close","data":{}}
+2026-01-22 17:44:41,628 \U0001f4c9 Status: PnL -0.22$ (-0.01%) | DCA: 0
+2026-01-22 17:45:03,154 \U0001f691 Doctor: No TP order! Placing...
+2026-01-22 17:45:06,005 \u274c TP fail: bingx {"code":101205,"msg":"No position to close","data":{}}
+2026-01-22 17:45:18,093 \U0001f4c9 Status: PnL -0.39$ (-0.01%) | DCA: 0
+2026-01-22 17:45:28,023 \U0001f691 Doctor: No TP order! Placing...
+2026-01-22 17:45:30,350 \u274c TP fail: bingx {"code":101205,"msg":"No position to close","data":{}}
+2026-01-22 17:45:53,108 \U0001f691 Doctor: No TP order! Placing...
+2026-01-22 17:45:55,413 \u274c TP fail: bingx {"code":101205,"msg":"No position to close","data":{}}
+2026-01-22 17:45:56,687 \U0001f4c9 Status: PnL -0.52$ (-0.02%) | DCA: 0
+2026-01-22 17:46:18,356 \U0001f691 Doctor: No TP order! Placing...
+2026-01-22 17:46:20,679 \u274c TP fail: bingx {"code":101205,"msg":"No position to close","data":{}}
+2026-01-22 17:46:33,165 \U0001f4c9 Status: PnL -0.56$ (-0.02%) | DCA: 0
+2026-01-22 17:46:43,071 \U0001f691 Doctor: No TP order! Placing...
+2026-01-22 17:46:45,375 \u274c TP fail: bingx {"code":101205,"msg":"No position to close","data":{}}
+2026-01-22 17:47:08,393 \U0001f691 Doctor: No TP order! Placing...
+2026-01-22 17:47:10,716 \u274c TP fail: bingx {"code":101205,"msg":"No position to close","data":{}}
+2026-01-22 17:47:11,511 \U0001f4c9 Status: PnL -0.56$ (-0.02%) | DCA: 0
+2026-01-22 17:47:32,430 \U0001f691 Doctor: No TP order! Placing...
+2026-01-22 17:47:34,729 \u274c TP fail: bingx {"code":101205,"msg":"No position to close","data":{}}
+2026-01-22 17:47:46,823 \U0001f4c9 Status: PnL -0.61$ (-0.02%) | DCA: 0
+2026-01-22 17:47:57,191 \U0001f691 Doctor: No TP order! Placing...
+2026-01-22 17:47:59,500 \u274c TP fail: bingx {"code":101205,"msg":"No position to close","data":{}}
+2026-01-22 17:48:21,667 \U0001f691 Doctor: No TP order! Placing...
+2026-01-22 17:48:23,978 \u274c TP fail: bingx {"code":101205,"msg":"No position to close","data":{}}
+2026-01-22 17:48:24,783 \U0001f4c9 Status: PnL -0.77$ (-0.02%) | DCA: 0
+2026-01-22 17:48:45,901 \U0001f691 Doctor: No TP order! Placing...
+2026-01-22 17:48:48,210 \u274c TP fail: bingx {"code":101205,"msg":"No position to close","data":{}}
+2026-01-22 17:49:00,711 \U0001f4c9 Status: PnL -0.70$ (-0.02%) | DCA: 0
+2026-01-22 17:49:10,605 \U0001f691 Doctor: No TP order! Placing...
+2026-01-22 17:49:12,929 \u274c TP fail: bingx {"code":101205,"msg":"No position to close","data":{}}
+2026-01-22 17:49:34,657 \U0001f691 Doctor: No TP order! Placing...
+2026-01-22 17:49:36,968 \u274c TP fail: bingx {"code":101205,"msg":"No position to close","data":{}}
+2026-01-22 17:49:38,236 \U0001f4c9 Status: PnL -0.84$ (-0.03%) | DCA: 0
+2026-01-22 17:49:59,290 \U0001f691 Doctor: No TP order! Placing...
+2026-01-22 17:50:01,586 \u274c TP fail: bingx {"code":101205,"msg":"No position to close","data":{}}
+2026-01-22 17:50:13,858 \U0001f4c9 Status: PnL -0.90$ (-0.03%) | DCA: 0
+2026-01-22 17:50:23,774 \U0001f691 Doctor: No TP order! Placing...
+2026-01-22 17:50:26,075 \u274c TP fail: bingx {"code":101205,"msg":"No position to close","data":{}}
+2026-01-22 17:50:47,891 \U0001f691 Doctor: No TP order! Placing...
+2026-01-22 17:50:50,190 \u274c TP fail: bingx {"code":101205,"msg":"No position to close","data":{}}
+2026-01-22 17:50:50,970 \U0001f4c9 Status: PnL -0.82$ (-0.02%) | DCA: 0
+2026-01-22 17:51:12,465 \U0001f691 Doctor: No TP order! Placing...
+2026-01-22 17:51:14,763 \u274c TP fail: bingx {"code":101205,"msg":"No position to close","data":{}}
+2026-01-22 17:51:27,153 \U0001f4c9 Status: PnL -0.62$ (-0.02%) | DCA: 0
+2026-01-22 17:51:37,520 \U0001f691 Doctor: No TP order! Placing...
+2026-01-22 17:51:39,841 \u274c TP fail: bingx {"code":101205,"msg":"No position to close","data":{}}
+2026-01-22 17:52:02,488 \U0001f691 Doctor: No TP order! Placing...
+2026-01-22 17:52:04,800 \u274c TP fail: bingx {"code":101205,"msg":"No position to close","data":{}}
+2026-01-22 17:52:05,585 \U0001f4c9 Status: PnL -0.44$ (-0.01%) | DCA: 0
+2026-01-22 17:52:26,846 \U0001f691 Doctor: No TP order! Placing...
+2026-01-22 17:52:29,170 \u274c TP fail: bingx {"code":101205,"msg":"No position to close","data":{}}
+2026-01-22 17:52:41,544 \U0001f4c9 Status: PnL -0.42$ (-0.01%) | DCA: 0
+2026-01-22 17:52:52,195 \U0001f691 Doctor: No TP order! Placing...
+2026-01-22 17:52:54,494 \u274c TP fail: bingx {"code":101205,"msg":"No position to close","data":{}}
+2026-01-22 17:53:16,637 \U0001f691 Doctor: No TP order! Placing...
+2026-01-22 17:53:18,929 \u274c TP fail: bingx {"code":101205,"msg":"No position to close","data":{}}
+2026-01-22 17:53:19,703 \U0001f4c9 Status: PnL -0.47$ (-0.01%) | DCA: 0
+2026-01-22 17:53:32,241 \U0001f528 DCA placed @ 88867.3000 (Dist: 0.80%)
+2026-01-22 17:53:41,910 \U0001f691 Doctor: No TP order! Placing...
+2026-01-22 17:53:44,217 \u274c TP fail: bingx {"code":101205,"msg":"No position to close","data":{}}
+2026-01-22 17:53:56,201 \U0001f4c9 Status: PnL -0.37$ (-0.01%) | DCA: 0
+2026-01-22 17:54:06,594 \U0001f691 Doctor: No TP order! Placing...
+2026-01-22 17:54:08,902 \u274c TP fail: bingx {"code":101205,"msg":"No position to close","data":{}}
+2026-01-22 17:54:30,607 \U0001f691 Doctor: No TP order! Placing...
+2026-01-22 17:54:32,947 \u274c TP fail: bingx {"code":101205,"msg":"No position to close","data":{}}
+2026-01-22 17:54:33,726 \U0001f4c9 Status: PnL -0.44$ (-0.01%) | DCA: 0
+2026-01-22 17:54:55,938 \U0001f691 Doctor: No TP order! Placing...
+2026-01-22 17:54:58,236 \u274c TP fail: bingx {"code":101205,"msg":"No position to close","data":{}}
+2026-01-22 17:55:10,043 \U0001f4c9 Status: PnL -0.40$ (-0.01%) | DCA: 0
+2026-01-22 17:55:19,913 \U0001f691 Doctor: No TP order! Placing...
+2026-01-22 17:55:22,218 \u274c TP fail: bingx {"code":101205,"msg":"No position to close","data":{}}
+2026-01-22 17:55:44,812 \U0001f691 Doctor: No TP order! Placing...
+2026-01-22 17:55:47,770 \u274c TP fail: bingx {"code":101205,"msg":"No position to close","data":{}}
+2026-01-22 17:55:49,058 \U0001f4c9 Status: PnL -0.50$ (-0.01%) | DCA: 0
+2026-01-22 17:56:10,553 \U0001f691 Doctor: No TP order! Placing...
+2026-01-22 17:56:12,870 \u274c TP fail: bingx {"code":101205,"msg":"No position to close","data":{}}
+2026-01-22 17:56:25,502 \U0001f4c9 Status: PnL -0.69$ (-0.02%) | DCA: 0
+2026-01-22 17:56:35,394 \U0001f691 Doctor: No TP order! Placing...
+2026-01-22 17:56:37,686 \u274c TP fail: bingx {"code":101205,"msg":"No position to close","data":{}}
+2026-01-22 17:56:59,807 \U0001f691 Doctor: No TP order! Placing...
+2026-01-22 17:57:02,153 \u274c TP fail: bingx {"code":101205,"msg":"No position to close","data":{}}
+2026-01-22 17:57:02,949 \U0001f4c9 Status: PnL -0.74$ (-0.02%) | DCA: 0
+2026-01-22 17:57:24,598 \U0001f691 Doctor: No TP order! Placing...
+2026-01-22 17:57:26,908 \u274c TP fail: bingx {"code":101205,"msg":"No position to close","data":{}}
+2026-01-22 17:57:38,727 \U0001f4c9 Status: PnL -0.67$ (-0.02%) | DCA: 0
+2026-01-22 17:57:48,647 \U0001f691 Doctor: No TP order! Placing...
+2026-01-22 17:57:50,999 \u274c TP fail: bingx {"code":101205,"msg":"No position to close","data":{}}
+2026-01-22 17:57:53,287 \U0001f528 DCA placed @ 88795.7000 (Dist: 0.88%)
+2026-01-22 17:58:14,363 \U0001f691 Doctor: No TP order! Placing...
+2026-01-22 17:58:16,679 \u274c TP fail: bingx {"code":101205,"msg":"No position to close","data":{}}
+2026-01-22 17:58:17,815 \U0001f528 DCA placed @ 88795.7000 (Dist: 0.88%)
+2026-01-22 17:58:18,846 \U0001f4c9 Status: PnL -0.69$ (-0.02%) | DCA: 0
+2026-01-22 17:58:41,422 \U0001f691 Doctor: No TP order! Placing...
+2026-01-22 17:58:43,759 \u274c TP fail: bingx {"code":101205,"msg":"No position to close","data":{}}
+2026-01-22 17:58:56,218 \U0001f4c9 Status: PnL -0.65$ (-0.02%) | DCA: 0
+2026-01-22 17:59:06,104 \U0001f691 Doctor: No TP order! Placing...
+2026-01-22 17:59:08,409 \u274c TP fail: bingx {"code":101205,"msg":"No position to close","data":{}}
+2026-01-22 17:59:30,811 \U0001f691 Doctor: No TP order! Placing...
+2026-01-22 17:59:33,109 \u274c TP fail: bingx {"code":101205,"msg":"No position to close","data":{}}
+2026-01-22 17:59:33,887 \U0001f4c9 Status: PnL -0.77$ (-0.02%) | DCA: 0
+2026-01-22 17:59:54,868 \U0001f691 Doctor: No TP order! Placing...
+2026-01-22 17:59:57,162 \u274c TP fail: bingx {"code":101205,"msg":"No position to close","data":{}}
+2026-01-22 18:00:09,526 \U0001f4c9 Status: PnL -0.93$ (-0.03%) | DCA: 0
+2026-01-22 18:00:12,225 AFC is enabled with max remote calls: 10.
+2026-01-22 18:00:12,758 HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent "HTTP/1.1 403 Forbidden"
+2026-01-22 18:00:19,479 \U0001f691 Doctor: No TP order! Placing...
+2026-01-22 18:00:21,780 \u274c TP fail: bingx {"code":101205,"msg":"No position to close","data":{}}
+2026-01-22 18:00:43,575 \U0001f691 Doctor: No TP order! Placing...
+2026-01-22 18:00:45,888 \u274c TP fail: bingx {"code":101205,"msg":"No position to close","data":{}}
+2026-01-22 18:00:46,744 \U0001f4c9 Status: PnL -0.85$ (-0.03%) | DCA: 0
+2026-01-22 18:01:07,783 \U0001f691 Doctor: No TP order! Placing...
+2026-01-22 18:01:10,082 \u274c TP fail: bingx {"code":101205,"msg":"No position to close","data":{}}
+2026-01-22 18:01:22,188 \U0001f4c9 Status: PnL -0.68$ (-0.02%) | DCA: 0
+2026-01-22 18:01:32,151 \U0001f691 Doctor: No TP order! Placing...
+2026-01-22 18:01:34,463 \u274c TP fail: bingx {"code":101205,"msg":"No position to close","data":{}}
+2026-01-22 18:01:56,327 \U0001f691 Doctor: No TP order! Placing...
+2026-01-22 18:01:58,663 \u274c TP fail: bingx {"code":101205,"msg":"No position to close","data":{}}
+2026-01-22 18:01:59,949 \U0001f4c9 Status: PnL -0.66$ (-0.02%) | DCA: 0
+2026-01-22 18:02:21,551 \U0001f691 Doctor: No TP order! Placing...
+2026-01-22 18:02:23,882 \u274c TP fail: bingx {"code":101205,"msg":"No position to close","data":{}}
+2026-01-22 18:02:35,841 \U0001f4c9 Status: PnL -0.69$ (-0.02%) | DCA: 0
+2026-01-22 18:02:45,748 \U0001f691 Doctor: No TP order! Placing...
+2026-01-22 18:02:48,055 \u274c TP fail: bingx {"code":101205,"msg":"No position to close","data":{}}
+2026-01-22 18:03:09,956 \U0001f691 Doctor: No TP order! Placing...
+2026-01-22 18:03:12,306 \u274c TP fail: bingx {"code":101205,"msg":"No position to close","data":{}}
+2026-01-22 18:03:13,154 \U0001f4c9 Status: PnL -0.85$ (-0.03%) | DCA: 0
+2026-01-22 18:03:34,348 \U0001f691 Doctor: No TP order! Placing...
+2026-01-22 18:03:36,705 \u274c TP fail: bingx {"code":101205,"msg":"No position to close","data":{}}
+2026-01-22 18:03:48,629 \U0001f4c9 Status: PnL -0.73$ (-0.02%) | DCA: 0
+2026-01-22 18:03:58,559 \U0001f691 Doctor: No TP order! Placing...
+2026-01-22 18:04:00,937 \u274c TP fail: bingx {"code":101205,"msg":"No position to close","data":{}}
+2026-01-22 18:04:22,842 \U0001f691 Doctor: No TP order! Placing...
+2026-01-22 18:04:25,196 \u274c TP fail: bingx {"code":101205,"msg":"No position to close","data":{}}
+2026-01-22 18:04:26,016 \U0001f4c9 Status: PnL -0.56$ (-0.02%) | DCA: 0
+2026-01-22 18:04:47,194 \U0001f691 Doctor: No TP order! Placing...
+2026-01-22 18:04:49,515 \u274c TP fail: bingx {"code":101205,"msg":"No position to close","data":{}}
+2026-01-22 18:05:01,417 \U0001f4c9 Status: PnL -0.50$ (-0.01%) | DCA: 0
+2026-01-22 18:05:11,339 \U0001f691 Doctor: No TP order! Placing...
+2026-01-22 18:05:13,661 \u274c TP fail: bingx {"code":101205,"msg":"No position to close","data":{}}
+2026-01-22 18:05:35,538 \U0001f691 Doctor: No TP order! Placing...
+2026-01-22 18:05:37,853 \u274c TP fail: bingx {"code":101205,"msg":"No position to close","data":{}}
+2026-01-22 18:05:38,664 \U0001f4c9 Status: PnL -0.65$ (-0.02%) | DCA: 0
+2026-01-22 18:05:59,592 \U0001f691 Doctor: No TP order! Placing...
+2026-01-22 18:06:01,904 \u274c TP fail: bingx {"code":101205,"msg":"No position to close","data":{}}
+2026-01-22 18:06:13,890 \U0001f4c9 Status: PnL -0.63$ (-0.02%) | DCA: 0
+2026-01-22 18:06:24,905 \U0001f691 Doctor: No TP order! Placing...
+2026-01-22 18:06:27,248 \u274c TP fail: bingx {"code":101205,"msg":"No position to close","data":{}}
+2026-01-22 18:06:49,223 \U0001f691 Doctor: No TP order! Placing...
+2026-01-22 18:06:51,563 \u274c TP fail: bingx {"code":101205,"msg":"No position to close","data":{}}
+2026-01-22 18:06:52,405 \U0001f4c9 Status: PnL -0.77$ (-0.02%) | DCA: 0
+2026-01-22 18:07:04,451 \U0001f528 DCA placed @ 89154.0000 (Dist: 0.48%)
+2026-01-22 18:07:14,269 \U0001f691 Doctor: No TP order! Placing...
+2026-01-22 18:07:20,767 \u26a1 DCA FILLED @ 89144.6000!
+2026-01-22 18:07:26,071 \U0001f528 DCA placed @ 88638.0000 (Dist: 1.06%)
+2026-01-22 18:07:37,331 \U0001f4c9 Status: PnL -1.02$ (-0.03%) | DCA: 1
+2026-01-22 18:08:12,161 \U0001f4c9 Status: PnL -0.58$ (-0.02%) | DCA: 1
+2026-01-22 18:08:44,555 \U0001f4c9 Status: PnL -0.51$ (-0.02%) | DCA: 1
+2026-01-22 18:09:19,682 \U0001f4c9 Status: PnL -0.52$ (-0.02%) | DCA: 1
+2026-01-22 18:09:51,814 \U0001f4c9 Status: PnL -0.81$ (-0.02%) | DCA: 1
+2026-01-22 18:10:26,206 \U0001f4c9 Status: PnL -0.22$ (-0.01%) | DCA: 1
+2026-01-22 18:10:59,062 \U0001f4c9 Status: PnL -0.27$ (-0.01%) | DCA: 1
+2026-01-22 18:11:34,698 \U0001f4c9 Status: PnL -0.51$ (-0.02%) | DCA: 1
+2026-01-22 18:12:08,250 \U0001f4c9 Status: PnL -0.90$ (-0.03%) | DCA: 1
+2026-01-22 18:12:43,179 \U0001f4c9 Status: PnL -0.50$ (-0.01%) | DCA: 1
+2026-01-22 18:13:18,147 \U0001f4c9 Status: PnL -0.44$ (-0.01%) | DCA: 1
+2026-01-22 18:13:53,991 \U0001f4c9 Status: PnL -0.13$ (-0.00%) | DCA: 1
+2026-01-22 18:14:26,730 \U0001f4c9 Status: PnL -0.49$ (-0.01%) | DCA: 1
+2026-01-22 18:15:02,466 \U0001f528 DCA placed @ 88165.0000 (Dist: 1.58%)
+2026-01-22 18:15:02,980 \U0001f4c9 Status: PnL -0.42$ (-0.01%) | DCA: 1
+2026-01-22 18:15:36,004 \U0001f4c9 Status: PnL -0.18$ (-0.01%) | DCA: 1
+2026-01-22 18:16:10,816 \U0001f4c9 Status: PnL -0.16$ (-0.00%) | DCA: 1
+2026-01-22 18:16:42,912 \U0001f4c9 Status: PnL -0.14$ (-0.00%) | DCA: 1
+2026-01-22 18:17:18,246 \U0001f4c9 Status: PnL -0.55$ (-0.02%) | DCA: 1
+2026-01-22 18:17:51,215 \U0001f4c9 Status: PnL -0.75$ (-0.02%) | DCA: 1
+2026-01-22 18:18:26,866 \U0001f4c9 Status: PnL -0.82$ (-0.02%) | DCA: 1
+2026-01-22 18:19:00,258 \U0001f4c9 Status: PnL -0.80$ (-0.02%) | DCA: 1
+2026-01-22 18:19:35,136 \U0001f4c9 Status: PnL -0.67$ (-0.02%) | DCA: 1
+2026-01-22 18:20:08,181 \U0001f4c9 Status: PnL -0.63$ (-0.02%) | DCA: 1
+2026-01-22 18:20:43,978 \U0001f4c9 Status: PnL -0.72$ (-0.02%) | DCA: 1
+2026-01-22 18:21:16,965 \U0001f4c9 Status: PnL -0.72$ (-0.02%) | DCA: 1
+2026-01-22 18:21:51,841 \U0001f4c9 Status: PnL -0.69$ (-0.02%) | DCA: 1
+2026-01-22 18:22:24,524 \U0001f4c9 Status: PnL -0.55$ (-0.02%) | DCA: 1
+2026-01-22 18:22:59,335 \U0001f4c9 Status: PnL -0.46$ (-0.01%) | DCA: 1
+2026-01-22 18:23:31,653 \U0001f4c9 Status: PnL -0.77$ (-0.02%) | DCA: 1
+2026-01-22 18:24:06,147 \U0001f4c9 Status: PnL -0.89$ (-0.03%) | DCA: 1
+2026-01-22 18:24:39,223 \U0001f4c9 Status: PnL -1.82$ (-0.05%) | DCA: 1
+2026-01-22 18:25:14,704 \U0001f4c9 Status: PnL -2.07$ (-0.06%) | DCA: 1
+2026-01-22 18:25:47,353 \U0001f4c9 Status: PnL -1.75$ (-0.05%) | DCA: 1
+2026-01-22 18:26:21,828 \U0001f4c9 Status: PnL -2.17$ (-0.06%) | DCA: 1
+2026-01-22 18:26:55,423 \U0001f4c9 Status: PnL -2.00$ (-0.06%) | DCA: 1
+2026-01-22 18:27:31,248 \U0001f4c9 Status: PnL -1.96$ (-0.06%) | DCA: 1
+2026-01-22 18:28:04,649 \U0001f4c9 Status: PnL -2.24$ (-0.07%) | DCA: 1
+2026-01-22 18:28:40,579 \u26a0\ufe0f PnL MISMATCH!
+Calc: -2.67$
+Exch: -1.13$
+Diff: 135.5%
+2026-01-22 18:28:41,743 \U0001f4c9 Status: PnL -2.67$ (-0.08%) | DCA: 1
+2026-01-22 18:29:04,457 \u26a0\ufe0f PnL MISMATCH!
+Calc: -2.64$
+Exch: -1.16$
+Diff: 127.8%
+2026-01-22 18:29:15,616 \U0001f4c9 Status: PnL -2.65$ (-0.08%) | DCA: 1
+2026-01-22 18:29:27,804 \u26a0\ufe0f PnL MISMATCH!
+Calc: -2.73$
+Exch: -1.19$
+Diff: 129.9%
+2026-01-22 18:29:51,591 \u26a0\ufe0f PnL MISMATCH!
+Calc: -2.45$
+Exch: -1.01$
+Diff: 143.2%
+2026-01-22 18:29:52,875 \U0001f4c9 Status: PnL -2.45$ (-0.07%) | DCA: 1
+2026-01-22 18:30:16,779 \u26a0\ufe0f PnL MISMATCH!
+Calc: -2.68$
+Exch: -1.13$
+Diff: 137.2%
+2026-01-22 18:30:28,055 \U0001f4c9 Status: PnL -2.47$ (-0.07%) | DCA: 1
+2026-01-22 18:30:41,184 \u26a0\ufe0f PnL MISMATCH!
+Calc: -2.39$
+Exch: -1.01$
+Diff: 137.4%
+2026-01-22 18:31:05,205 \u26a0\ufe0f PnL MISMATCH!
+Calc: -2.49$
+Exch: -1.06$
+Diff: 133.7%
+2026-01-22 18:31:06,360 \U0001f4c9 Status: PnL -2.49$ (-0.07%) | DCA: 1
+2026-01-22 18:31:39,929 \U0001f4c9 Status: PnL -2.61$ (-0.08%) | DCA: 1
+2026-01-22 18:31:52,903 \u26a0\ufe0f PnL MISMATCH!
+Calc: -2.71$
+Exch: -1.18$
+Diff: 129.0%
+2026-01-22 18:32:18,412 \u26a0\ufe0f PnL MISMATCH!
+Calc: -3.03$
+Exch: -1.29$
+Diff: 134.3%
+2026-01-22 18:32:19,782 \U0001f4c9 Status: PnL -3.03$ (-0.09%) | DCA: 1
+2026-01-22 18:32:42,714 \u26a0\ufe0f PnL MISMATCH!
+Calc: -3.13$
+Exch: -1.40$
+Diff: 124.2%
+2026-01-22 18:32:53,902 \U0001f4c9 Status: PnL -3.26$ (-0.10%) | DCA: 1
+2026-01-22 18:33:06,786 \u26a0\ufe0f PnL MISMATCH!
+Calc: -3.06$
+Exch: -1.36$
+Diff: 125.2%
+2026-01-22 18:33:30,702 \u26a0\ufe0f PnL MISMATCH!
+Calc: -2.83$
+Exch: -1.23$
+Diff: 129.9%
+2026-01-22 18:33:31,952 \U0001f4c9 Status: PnL -2.83$ (-0.08%) | DCA: 1
+2026-01-22 18:33:55,039 \u26a0\ufe0f PnL MISMATCH!
+Calc: -3.15$
+Exch: -1.38$
+Diff: 127.9%
+2026-01-22 18:34:06,280 \U0001f4c9 Status: PnL -2.64$ (-0.08%) | DCA: 1
+2026-01-22 18:34:19,090 \u26a0\ufe0f PnL MISMATCH!
+Calc: -2.57$
+Exch: -1.03$
+Diff: 148.6%
+2026-01-22 18:34:43,028 \U0001f4c9 Status: PnL -2.40$ (-0.07%) | DCA: 1
+2026-01-22 18:35:15,461 \U0001f4c9 Status: PnL -2.20$ (-0.07%) | DCA: 1
+2026-01-22 18:35:51,473 \U0001f4c9 Status: PnL -1.91$ (-0.06%) | DCA: 1
+2026-01-22 18:36:25,243 \U0001f4c9 Status: PnL -1.90$ (-0.06%) | DCA: 1
+2026-01-22 18:37:00,765 \U0001f4c9 Status: PnL -1.97$ (-0.06%) | DCA: 1
+2026-01-22 18:37:23,489 \U0001f528 DCA placed @ 88637.7000 (Dist: 1.06%)
+2026-01-22 18:37:34,223 \U0001f4c9 Status: PnL -2.14$ (-0.06%) | DCA: 1
+2026-01-22 18:38:09,758 \U0001f4c9 Status: PnL -1.94$ (-0.06%) | DCA: 1
+2026-01-22 18:38:42,971 \U0001f4c9 Status: PnL -1.90$ (-0.06%) | DCA: 1
+2026-01-22 18:39:18,982 \U0001f4c9 Status: PnL -1.86$ (-0.06%) | DCA: 1
+2026-01-22 18:39:51,989 \U0001f4c9 Status: PnL -1.95$ (-0.06%) | DCA: 1
+2026-01-22 18:40:27,290 \U0001f4c9 Status: PnL -2.12$ (-0.06%) | DCA: 1
+2026-01-22 18:41:00,348 \U0001f4c9 Status: PnL -2.08$ (-0.06%) | DCA: 1
+2026-01-22 18:41:36,836 \U0001f4c9 Status: PnL -1.94$ (-0.06%) | DCA: 1
+2026-01-22 18:42:10,596 \U0001f4c9 Status: PnL -1.68$ (-0.05%) | DCA: 1
+2026-01-22 18:42:47,341 \U0001f4c9 Status: PnL -1.55$ (-0.05%) | DCA: 1
+2026-01-22 18:43:20,942 \U0001f4c9 Status: PnL -1.56$ (-0.05%) | DCA: 1
+2026-01-22 18:43:56,769 \U0001f4c9 Status: PnL -1.43$ (-0.04%) | DCA: 1
+2026-01-22 18:44:30,539 \U0001f4c9 Status: PnL -0.93$ (-0.03%) | DCA: 1
+2026-01-22 18:45:06,895 \U0001f4c9 Status: PnL -0.98$ (-0.03%) | DCA: 1
+2026-01-22 18:45:41,791 \U0001f4c9 Status: PnL -0.38$ (-0.01%) | DCA: 1
+2026-01-22 18:46:18,085 \U0001f4c9 Status: PnL -0.16$ (-0.00%) | DCA: 1
+2026-01-22 18:46:50,528 \U0001f4c9 Status: PnL -0.28$ (-0.01%) | DCA: 1
+2026-01-22 18:47:25,504 \U0001f4c9 Status: PnL -0.13$ (-0.00%) | DCA: 1
+2026-01-22 18:47:58,885 \U0001f4c9 Status: PnL -0.14$ (-0.00%) | DCA: 1
+2026-01-22 18:48:35,974 \U0001f4c9 Status: PnL -0.52$ (-0.02%) | DCA: 1
+2026-01-22 18:49:09,299 \U0001f4c9 Status: PnL -0.94$ (-0.03%) | DCA: 1
+2026-01-22 18:49:44,641 \U0001f4c9 Status: PnL -0.76$ (-0.02%) | DCA: 1
+2026-01-22 18:50:17,584 \U0001f4c9 Status: PnL -0.63$ (-0.02%) | DCA: 1
+2026-01-22 18:50:53,349 \U0001f4c9 Status: PnL -0.45$ (-0.01%) | DCA: 1
+2026-01-22 18:51:26,090 \U0001f4c9 Status: PnL -0.83$ (-0.02%) | DCA: 1
+2026-01-22 18:52:01,927 \U0001f4c9 Status: PnL -1.03$ (-0.03%) | DCA: 1
+2026-01-22 18:52:35,420 \U0001f4c9 Status: PnL -1.13$ (-0.03%) | DCA: 1
+2026-01-22 18:53:11,788 \U0001f528 DCA placed @ 88165.0000 (Dist: 1.58%)
+2026-01-22 18:53:12,374 \U0001f4c9 Status: PnL -1.11$ (-0.03%) | DCA: 1
+2026-01-22 18:53:45,503 \U0001f4c9 Status: PnL -1.10$ (-0.03%) | DCA: 1
+2026-01-22 18:54:21,216 \U0001f4c9 Status: PnL -1.01$ (-0.03%) | DCA: 1
+2026-01-22 18:54:54,753 \U0001f4c9 Status: PnL -1.55$ (-0.05%) | DCA: 1
+2026-01-22 18:55:29,667 \U0001f4c9 Status: PnL -1.41$ (-0.04%) | DCA: 1
+2026-01-22 18:56:02,024 \U0001f4c9 Status: PnL -1.25$ (-0.04%) | DCA: 1
+2026-01-22 18:56:37,022 \U0001f4c9 Status: PnL -1.48$ (-0.04%) | DCA: 1
+2026-01-22 18:57:10,409 \U0001f4c9 Status: PnL -1.55$ (-0.05%) | DCA: 1
+2026-01-22 18:57:45,451 \U0001f4c9 Status: PnL -1.51$ (-0.05%) | DCA: 1
+2026-01-22 18:58:18,728 \U0001f4c9 Status: PnL -1.56$ (-0.05%) | DCA: 1
+2026-01-22 18:58:54,095 \U0001f4c9 Status: PnL -1.29$ (-0.04%) | DCA: 1
+2026-01-22 18:59:26,633 \U0001f4c9 Status: PnL -1.34$ (-0.04%) | DCA: 1
+2026-01-22 19:00:01,927 \U0001f4c9 Status: PnL -1.44$ (-0.04%) | DCA: 1
+2026-01-22 19:00:35,765 \U0001f4c9 Status: PnL -1.09$ (-0.03%) | DCA: 1
+2026-01-22 19:01:11,756 \U0001f4c9 Status: PnL -1.15$ (-0.03%) | DCA: 1
+2026-01-22 19:01:44,352 \U0001f4c9 Status: PnL -0.98$ (-0.03%) | DCA: 1
+2026-01-22 19:02:20,781 \U0001f4c9 Status: PnL -0.68$ (-0.02%) | DCA: 1
+2026-01-22 19:02:53,719 \U0001f4c9 Status: PnL -1.14$ (-0.03%) | DCA: 1
+2026-01-22 19:03:29,205 \U0001f4c9 Status: PnL -1.07$ (-0.03%) | DCA: 1
+2026-01-22 19:04:02,243 \U0001f4c9 Status: PnL -0.81$ (-0.02%) | DCA: 1
+2026-01-22 19:04:38,376 \U0001f4c9 Status: PnL -0.91$ (-0.03%) | DCA: 1
+2026-01-22 19:05:11,882 \U0001f4c9 Status: PnL -0.96$ (-0.03%) | DCA: 1
+2026-01-22 19:05:47,593 \U0001f4c9 Status: PnL -1.36$ (-0.04%) | DCA: 1
+2026-01-22 19:06:20,638 \U0001f4c9 Status: PnL -1.27$ (-0.04%) | DCA: 1
+2026-01-22 19:06:55,815 \U0001f4c9 Status: PnL -1.19$ (-0.04%) | DCA: 1
+2026-01-22 19:07:28,713 \U0001f4c9 Status: PnL -1.10$ (-0.03%) | DCA: 1
+2026-01-22 19:08:04,040 \U0001f4c9 Status: PnL -1.43$ (-0.04%) | DCA: 1
+2026-01-22 19:08:36,808 \U0001f4c9 Status: PnL -1.84$ (-0.05%) | DCA: 1
+2026-01-22 19:09:13,008 \U0001f4c9 Status: PnL -1.97$ (-0.06%) | DCA: 1
+2026-01-22 19:09:46,391 \U0001f4c9 Status: PnL -1.75$ (-0.05%) | DCA: 1
+2026-01-22 19:10:21,807 \U0001f4c9 Status: PnL -1.78$ (-0.05%) | DCA: 1
+2026-01-22 19:10:55,253 \U0001f4c9 Status: PnL -1.85$ (-0.06%) | DCA: 1
+2026-01-22 19:11:30,571 \U0001f4c9 Status: PnL -2.16$ (-0.06%) | DCA: 1
+2026-01-22 19:12:04,462 \U0001f4c9 Status: PnL -2.08$ (-0.06%) | DCA: 1
+2026-01-22 19:12:40,300 \U0001f4c9 Status: PnL -2.05$ (-0.06%) | DCA: 1
+2026-01-22 19:13:13,614 \U0001f4c9 Status: PnL -1.76$ (-0.05%) | DCA: 1
+2026-01-22 19:13:49,276 \U0001f4c9 Status: PnL -2.04$ (-0.06%) | DCA: 1
+2026-01-22 19:14:23,301 \U0001f4c9 Status: PnL -2.21$ (-0.07%) | DCA: 1
+2026-01-22 19:14:59,093 \U0001f4c9 Status: PnL -2.01$ (-0.06%) | DCA: 1
+2026-01-22 19:15:32,141 \U0001f4c9 Status: PnL -2.18$ (-0.06%) | DCA: 1
+2026-01-22 19:16:08,508 \U0001f4c9 Status: PnL -1.99$ (-0.06%) | DCA: 1
+2026-01-22 19:16:41,532 \U0001f4c9 Status: PnL -2.03$ (-0.06%) | DCA: 1
+2026-01-22 19:17:17,226 \U0001f4c9 Status: PnL -2.26$ (-0.07%) | DCA: 1
+2026-01-22 19:17:58,092 \U0001f4c9 Status: PnL -2.45$ (-0.07%) | DCA: 1
+2026-01-22 19:18:09,402 \u26a0\ufe0f PnL MISMATCH!
+Calc: -2.45$
+Exch: -1.04$
+Diff: 136.2%
+2026-01-22 19:18:34,561 \U0001f4c9 Status: PnL -2.34$ (-0.07%) | DCA: 1
+2026-01-22 19:19:08,865 \U0001f4c9 Status: PnL -2.53$ (-0.08%) | DCA: 1
+2026-01-22 19:19:44,090 \U0001f4c9 Status: PnL -2.37$ (-0.07%) | DCA: 1
+2026-01-22 19:20:17,906 \U0001f4c9 Status: PnL -2.20$ (-0.07%) | DCA: 1
+2026-01-22 19:20:53,636 \U0001f4c9 Status: PnL -2.33$ (-0.07%) | DCA: 1
+2026-01-22 19:21:28,381 \U0001f4c9 Status: PnL -2.31$ (-0.07%) | DCA: 1
+2026-01-22 19:22:03,434 \U0001f4c9 Status: PnL -2.18$ (-0.07%) | DCA: 1
+2026-01-22 19:22:37,782 \U0001f4c9 Status: PnL -1.41$ (-0.04%) | DCA: 1
+2026-01-22 19:23:13,761 \U0001f4c9 Status: PnL -0.89$ (-0.03%) | DCA: 1
+2026-01-22 19:23:49,122 \U0001f4c9 Status: PnL -0.95$ (-0.03%) | DCA: 1
+2026-01-22 19:24:24,314 \U0001f4c9 Status: PnL -1.00$ (-0.03%) | DCA: 1
+2026-01-22 19:24:58,862 \U0001f4c9 Status: PnL -1.16$ (-0.03%) | DCA: 1
+2026-01-22 19:25:35,325 \U0001f4c9 Status: PnL -0.79$ (-0.02%) | DCA: 1
+2026-01-22 19:26:10,484 \U0001f4c9 Status: PnL -1.18$ (-0.04%) | DCA: 1
+2026-01-22 19:26:47,118 \U0001f4c9 Status: PnL -1.10$ (-0.03%) | DCA: 1
+2026-01-22 19:27:23,152 \U0001f4c9 Status: PnL -1.06$ (-0.03%) | DCA: 1
+2026-01-22 19:27:57,067 \U0001f4c9 Status: PnL -1.08$ (-0.03%) | DCA: 1
+2026-01-22 19:28:31,179 \U0001f4c9 Status: PnL -0.80$ (-0.02%) | DCA: 1
+2026-01-22 19:29:05,288 \U0001f4c9 Status: PnL -1.13$ (-0.03%) | DCA: 1
+2026-01-22 19:29:39,465 \U0001f4c9 Status: PnL -1.47$ (-0.04%) | DCA: 1
+2026-01-22 19:30:14,647 \U0001f4c9 Status: PnL -1.35$ (-0.04%) | DCA: 1
+2026-01-22 19:30:49,444 \U0001f4c9 Status: PnL -1.02$ (-0.03%) | DCA: 1
+2026-01-22 19:31:24,053 \U0001f4c9 Status: PnL -1.11$ (-0.03%) | DCA: 1
+2026-01-22 19:31:59,008 \U0001f4c9 Status: PnL -1.21$ (-0.04%) | DCA: 1
+2026-01-22 19:32:33,920 \U0001f4c9 Status: PnL -1.09$ (-0.03%) | DCA: 1
+2026-01-22 19:33:10,140 \U0001f4c9 Status: PnL -1.74$ (-0.05%) | DCA: 1
+2026-01-22 19:33:45,623 \U0001f4c9 Status: PnL -1.90$ (-0.06%) | DCA: 1
+2026-01-22 19:34:20,100 \U0001f4c9 Status: PnL -1.98$ (-0.06%) | DCA: 1
+2026-01-22 19:34:56,094 \U0001f4c9 Status: PnL -2.10$ (-0.06%) | DCA: 1
+2026-01-22 19:35:30,902 \U0001f4c9 Status: PnL -2.26$ (-0.07%) | DCA: 1
+2026-01-22 19:36:04,966 \U0001f4c9 Status: PnL -2.09$ (-0.06%) | DCA: 1
+2026-01-22 19:36:38,833 \U0001f4c9 Status: PnL -1.79$ (-0.05%) | DCA: 1
+2026-01-22 19:37:13,674 \U0001f4c9 Status: PnL -2.11$ (-0.06%) | DCA: 1
+2026-01-22 19:37:49,039 \U0001f4c9 Status: PnL -1.85$ (-0.06%) | DCA: 1
+2026-01-22 19:38:24,971 \U0001f4c9 Status: PnL -1.44$ (-0.04%) | DCA: 1
+2026-01-22 19:38:59,753 \U0001f4c9 Status: PnL -1.43$ (-0.04%) | DCA: 1
+2026-01-22 19:39:34,139 \U0001f4c9 Status: PnL -1.78$ (-0.05%) | DCA: 1
+2026-01-22 19:40:10,242 \U0001f4c9 Status: PnL -2.00$ (-0.06%) | DCA: 1
+2026-01-22 19:40:45,121 \U0001f4c9 Status: PnL -1.84$ (-0.05%) | DCA: 1
+2026-01-22 19:41:19,510 \U0001f4c9 Status: PnL -1.72$ (-0.05%) | DCA: 1
+2026-01-22 19:41:54,213 \U0001f4c9 Status: PnL -1.96$ (-0.06%) | DCA: 1
+2026-01-22 19:42:30,082 \U0001f4c9 Status: PnL -1.89$ (-0.06%) | DCA: 1
+2026-01-22 19:43:03,959 \U0001f4c9 Status: PnL -1.64$ (-0.05%) | DCA: 1
+2026-01-22 19:43:37,946 \U0001f4c9 Status: PnL -1.61$ (-0.05%) | DCA: 1
+2026-01-22 19:44:13,420 \U0001f4c9 Status: PnL -1.62$ (-0.05%) | DCA: 1
+2026-01-22 19:44:47,543 \U0001f4c9 Status: PnL -1.57$ (-0.05%) | DCA: 1
+2026-01-22 19:45:21,745 \U0001f4c9 Status: PnL -1.44$ (-0.04%) | DCA: 1
+2026-01-22 19:45:56,373 \U0001f4c9 Status: PnL -1.25$ (-0.04%) | DCA: 1
+2026-01-22 19:46:29,585 \U0001f4c9 Status: PnL -1.20$ (-0.04%) | DCA: 1
+2026-01-22 19:47:03,661 \U0001f4c9 Status: PnL -1.34$ (-0.04%) | DCA: 1
+2026-01-22 19:47:37,953 \U0001f4c9 Status: PnL -1.10$ (-0.03%) | DCA: 1
+2026-01-22 19:48:11,442 \U0001f4c9 Status: PnL -0.56$ (-0.02%) | DCA: 1
+2026-01-22 19:48:45,456 \U0001f4c9 Status: PnL -0.63$ (-0.02%) | DCA: 1
+2026-01-22 19:49:19,032 \U0001f4c9 Status: PnL -0.87$ (-0.03%) | DCA: 1
+2026-01-22 19:49:53,049 \U0001f4c9 Status: PnL -0.87$ (-0.03%) | DCA: 1
+2026-01-22 19:50:26,957 \U0001f4c9 Status: PnL -0.98$ (-0.03%) | DCA: 1
+2026-01-22 19:51:01,587 \U0001f4c9 Status: PnL -1.08$ (-0.03%) | DCA: 1
+2026-01-22 19:51:36,077 \U0001f4c9 Status: PnL -1.01$ (-0.03%) | DCA: 1
+2026-01-22 19:52:10,063 \U0001f4c9 Status: PnL -0.87$ (-0.03%) | DCA: 1
+2026-01-22 19:52:44,333 \U0001f4c9 Status: PnL -1.08$ (-0.03%) | DCA: 1
+2026-01-22 19:53:18,491 \U0001f4c9 Status: PnL -1.28$ (-0.04%) | DCA: 1
+2026-01-22 19:53:54,235 \U0001f4c9 Status: PnL -1.59$ (-0.05%) | DCA: 1
+2026-01-22 19:54:26,423 \U0001f4c9 Status: PnL -1.49$ (-0.04%) | DCA: 1
+2026-01-22 19:55:00,312 \U0001f4c9 Status: PnL -1.39$ (-0.04%) | DCA: 1
+2026-01-22 19:55:34,706 \U0001f4c9 Status: PnL -1.41$ (-0.04%) | DCA: 1
+2026-01-22 19:56:08,082 \U0001f4c9 Status: PnL -1.79$ (-0.05%) | DCA: 1
+2026-01-22 19:56:41,610 \U0001f4c9 Status: PnL -1.59$ (-0.05%) | DCA: 1
+2026-01-22 19:57:16,470 \U0001f4c9 Status: PnL -1.43$ (-0.04%) | DCA: 1
+2026-01-22 19:57:52,192 \U0001f4c9 Status: PnL -1.35$ (-0.04%) | DCA: 1
+2026-01-22 19:58:27,172 \U0001f4c9 Status: PnL -1.35$ (-0.04%) | DCA: 1
+2026-01-22 19:59:02,252 \U0001f4c9 Status: PnL -1.51$ (-0.05%) | DCA: 1
+2026-01-22 19:59:37,552 \U0001f4c9 Status: PnL -1.29$ (-0.04%) | DCA: 1
+2026-01-22 20:00:11,991 \U0001f4c9 Status: PnL -1.20$ (-0.04%) | DCA: 1
+2026-01-22 20:00:46,933 \U0001f4c9 Status: PnL -1.11$ (-0.03%) | DCA: 1
+2026-01-22 20:01:24,179 \U0001f4c9 Status: PnL -0.95$ (-0.03%) | DCA: 1
+2026-01-22 20:01:58,940 \U0001f4c9 Status: PnL -0.85$ (-0.03%) | DCA: 1
+2026-01-22 20:02:33,241 \U0001f4c9 Status: PnL -0.89$ (-0.03%) | DCA: 1
+2026-01-22 20:03:07,714 \U0001f4c9 Status: PnL -0.71$ (-0.02%) | DCA: 1

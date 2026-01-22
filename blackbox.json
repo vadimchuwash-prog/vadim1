@@ -1,0 +1,19 @@
+{"timestamp": "2026-01-22T16:34:06.979860", "event": "ENTRY", "side": "Sell", "price": 89894.4, "size": 0.0014, "usd": 6.632786556}
+{"timestamp": "2026-01-22T16:39:59.055447", "event": "ENTRY", "side": "Sell", "price": 89814.2, "size": 0.0014, "usd": 6.632462430000001}
+{"timestamp": "2026-01-22T16:45:10.310996", "event": "ENTRY", "side": "Sell", "price": 89584.0, "size": 0.0016, "usd": 7.236013176}
+{"timestamp": "2026-01-22T18:07:20.767702", "event": "DCA_EXECUTED", "level": 1, "price": 89144.6, "size": 0.0022}
+{"timestamp": "2026-01-22T18:28:41.742617", "event": "PNL_MISMATCH", "calc_pnl": -2.668020000000022, "exchange_pnl": -1.133, "diff": 1.535020000000022}
+{"timestamp": "2026-01-22T18:29:05.669579", "event": "PNL_MISMATCH", "calc_pnl": -2.639520000000022, "exchange_pnl": -1.1585, "diff": 1.4810200000000218}
+{"timestamp": "2026-01-22T18:29:29.025148", "event": "PNL_MISMATCH", "calc_pnl": -2.733760000000033, "exchange_pnl": -1.1893, "diff": 1.544460000000033}
+{"timestamp": "2026-01-22T18:29:52.874372", "event": "PNL_MISMATCH", "calc_pnl": -2.446480000000011, "exchange_pnl": -1.006, "diff": 1.4404800000000109}
+{"timestamp": "2026-01-22T18:30:17.949692", "event": "PNL_MISMATCH", "calc_pnl": -2.6786600000000327, "exchange_pnl": -1.1295, "diff": 1.5491600000000327}
+{"timestamp": "2026-01-22T18:30:42.360677", "event": "PNL_MISMATCH", "calc_pnl": -2.392900000000044, "exchange_pnl": -1.0078, "diff": 1.385100000000044}
+{"timestamp": "2026-01-22T18:31:06.359374", "event": "PNL_MISMATCH", "calc_pnl": -2.4875200000000217, "exchange_pnl": -1.0644, "diff": 1.4231200000000217}
+{"timestamp": "2026-01-22T18:31:54.174216", "event": "PNL_MISMATCH", "calc_pnl": -2.707160000000033, "exchange_pnl": -1.1821, "diff": 1.525060000000033}
+{"timestamp": "2026-01-22T18:32:19.781049", "event": "PNL_MISMATCH", "calc_pnl": -3.027500000000044, "exchange_pnl": -1.2921, "diff": 1.7354000000000438}
+{"timestamp": "2026-01-22T18:32:43.888243", "event": "PNL_MISMATCH", "calc_pnl": -3.128580000000011, "exchange_pnl": -1.3955, "diff": 1.733080000000011}
+{"timestamp": "2026-01-22T18:33:07.892073", "event": "PNL_MISMATCH", "calc_pnl": -3.059800000000044, "exchange_pnl": -1.3585, "diff": 1.701300000000044}
+{"timestamp": "2026-01-22T18:33:31.950624", "event": "PNL_MISMATCH", "calc_pnl": -2.829520000000022, "exchange_pnl": -1.2307, "diff": 1.598820000000022}
+{"timestamp": "2026-01-22T18:33:56.175995", "event": "PNL_MISMATCH", "calc_pnl": -3.149100000000044, "exchange_pnl": -1.382, "diff": 1.7671000000000443}
+{"timestamp": "2026-01-22T18:34:20.198224", "event": "PNL_MISMATCH", "calc_pnl": -2.57074, "exchange_pnl": -1.034, "diff": 1.5367399999999998}
+{"timestamp": "2026-01-22T19:18:10.844370", "event": "PNL_MISMATCH", "calc_pnl": -2.454460000000033, "exchange_pnl": -1.0391, "diff": 1.415360000000033}
