@@ -1315,15 +1315,34 @@ Provide a short, helpful answer (max 200 words). Be specific and actionable if p
             dca_price = float(self.exchange.price_to_precision(self.symbol, dca_price))
             
             weight = weights[self.safety_count]
+
+            # 🆕 v1.5: Volume Factor - защита от ножей (из ultrabtc7)
+            volume_factor = 1.0
+            current_rsi = 50.0
+            if self.current_market_df is not None:
+                current_rsi = self.current_market_df['RSI'].iloc[-2]
+
+            if self.position_side == "Buy":
+                if current_rsi < 20:
+                    volume_factor = 0.8  # -20% при панике
+                elif current_rsi < 30:
+                    volume_factor = 0.9  # -10% при сильном перепродаже
+            elif self.position_side == "Sell":
+                if current_rsi > 80:
+                    volume_factor = 0.8  # -20% при эйфории
+                elif current_rsi > 70:
+                    volume_factor = 0.9  # -10% при сильной перекупленности
+
             first_order_usd = self.entry_usd_vol
-            dca_vol_usd = first_order_usd * weight
+            dca_vol_usd = first_order_usd * weight * volume_factor
             dca_vol_usd = max(dca_vol_usd, MIN_EXCHANGE_ORDER_USD)
             
             dca_size_coins = (dca_vol_usd * LEVERAGE) / dca_price
             dca_size_coins = float(self.exchange.amount_to_precision(self.symbol, dca_size_coins))
             
             # 🆕 v1.4.1: Логирование параметров
-            self.log(f"📝 DCA{self.safety_count+1} Params: side={self.position_side.lower()}, amount={dca_size_coins}, price={dca_price:.4f}, base={self.base_entry_price:.4f}, dist={actual_dist*100:.2f}%, weight={weight}x", Col.GRAY)
+            vol_log = f", vol_factor={volume_factor:.1f}x" if volume_factor != 1.0 else ""
+            self.log(f"📝 DCA{self.safety_count+1} Params: side={self.position_side.lower()}, amount={dca_size_coins}, price={dca_price:.4f}, base={self.base_entry_price:.4f}, dist={actual_dist*100:.2f}%, weight={weight}x{vol_log}", Col.GRAY)
             
             # 🆕 v1.4.1: Проверка минимального объёма
             if dca_size_coins <= 0:
@@ -1341,7 +1360,8 @@ Provide a short, helpful answer (max 200 words). Be specific and actionable if p
             )
             self.dca_order_id = order['id']
             
-            self.log(f"✅ DCA{self.safety_count+1} placed: ID={self.dca_order_id}, Price={dca_price:.4f} (dist: {actual_dist*100:.2f}%, weight: {weight}x)", Col.CYAN)
+            vol_suffix = f", vol x{volume_factor:.1f}" if volume_factor != 1.0 else ""
+            self.log(f"✅ DCA{self.safety_count+1} placed: ID={self.dca_order_id}, Price={dca_price:.4f} (dist: {actual_dist*100:.2f}%, weight: {weight}x{vol_suffix})", Col.CYAN)
             
             self._dca_placing = False
             return True
@@ -1428,12 +1448,13 @@ Provide a short, helpful answer (max 200 words). Be specific and actionable if p
             self.balance += net_pnl
             self.in_position = False
 
-            # Охлаждение только после стоплосса
-            if "STOP LOSS" in reason.upper() or "SL" in reason.upper():
-                self.last_trade_time = datetime.now()
+            # 🆕 v1.5: Охлаждение по PnL (из ultrabtc7)
+            # Trailing Stop всегда в плюсе (активация +0.8%, откат 0.35%)
+            # Поэтому проверяем по результату, а не по причине
+            if net_pnl > 0:
+                self.last_trade_time = datetime.now() - timedelta(hours=2)  # БЕЗ ОХЛАЖДЕНИЯ
             else:
-                # После прибыльной сделки или TP - без охлаждения
-                self.last_trade_time = datetime.now() - timedelta(hours=2)
+                self.last_trade_time = datetime.now()  # С ОХЛАЖДЕНИЕМ (1 час)
             
             self.session_total_pnl += net_pnl
             self.session_total_fees += self.current_trade_fees
@@ -1592,8 +1613,12 @@ Provide a short, helpful answer (max 200 words). Be specific and actionable if p
                                 net = ((fill_price - self.avg_price) * self.total_size_coins * side_mult) - self.current_trade_fees
                                 self.balance += net
                                 self.in_position = False
-                                
-                                self.last_trade_time = datetime.now() - timedelta(hours=2)
+
+                                # 🆕 v1.5: Охлаждение по PnL (TP обычно в плюсе)
+                                if net > 0:
+                                    self.last_trade_time = datetime.now() - timedelta(hours=2)
+                                else:
+                                    self.last_trade_time = datetime.now()
 
                                 self.session_total_pnl += net
                                 self.session_total_fees += self.current_trade_fees
