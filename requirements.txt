@@ -1,0 +1,9 @@
+# Trading Bot Dependencies
+ccxt>=4.0.0
+pandas>=2.0.0
+ta>=0.11.0
+requests>=2.31.0
+cryptography>=41.0.0
+
+# AI Integration (Optional)
+google-generativeai>=0.3.0

@@ -1,0 +1,26 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# Virtual Environment
+venv/
+env/
+ENV/
+
+# Bot files
+*.log
+*.csv
+*.bin
+*.key
+blackbox.json
+encrypted_config.bin
+secret.key
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo

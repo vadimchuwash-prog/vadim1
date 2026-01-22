@@ -23,12 +23,6 @@ from config import *
 from telegram_bot import TelegramBot
 from ai_assistant import AIAssistant
 
-                    result.append({'type': 'callback', 'id': u['callback_query']['id'], 'msg_id': u['callback_query']['message']['message_id'], 'value': u['callback_query']['data']})
-                elif 'message' in u and 'text' in u['message']:
-                    result.append({'type': 'text', 'value': u['message']['text']})
-            return result
-        except: return []
-
 # ==========================================
 # 🤖 HYBRID TRADING BOT v1.1
 # ==========================================
@@ -1220,6 +1214,9 @@ Provide a short, helpful answer (max 200 words). Be specific and actionable if p
 
     def place_limit_tp(self):
         """Размещение TP - ИСПРАВЛЕНО v1.4.1"""
+        if not self.in_position:
+            return False
+
         # Отменяем старый TP если есть
         if self.tp_order_id:
             try: 
@@ -1256,12 +1253,15 @@ Provide a short, helpful answer (max 200 words). Be specific and actionable if p
                 return False
             
             order = self.exchange.create_order(
-                symbol=self.symbol, 
-                type='limit', 
+                symbol=self.symbol,
+                type='limit',
                 side=order_side,
-                amount=amount, 
-                price=price, 
-                params={'positionSide': 'LONG' if self.position_side == 'Buy' else 'SHORT'}
+                amount=amount,
+                price=price,
+                params={
+                    'positionSide': 'LONG' if self.position_side == 'Buy' else 'SHORT',
+                    'reduceOnly': True
+                }
             )
             self.tp_order_id = order['id']
             self.log(f"✅ TP placed: ID={self.tp_order_id}, Price={price:.4f}", Col.GREEN)
@@ -1276,12 +1276,15 @@ Provide a short, helpful answer (max 200 words). Be specific and actionable if p
 
     def place_limit_dca(self):
         """Размещение DCA - УЛУЧШЕННАЯ ВЕРСИЯ v1.4.1"""
+        if not self.in_position:
+            return False
+
         # Защита от множественных вызовов
         if hasattr(self, '_dca_placing') and self._dca_placing:
             return False
-        
+
         self._dca_placing = True
-        
+
         try:
             if self.dca_order_id:
                 try: 
@@ -1424,11 +1427,13 @@ Provide a short, helpful answer (max 200 words). Be specific and actionable if p
             
             self.balance += net_pnl
             self.in_position = False
-            
-            if net_pnl > 0:
-                self.last_trade_time = datetime.now() - timedelta(hours=2) 
-            else:
+
+            # Охлаждение только после стоплосса
+            if "STOP LOSS" in reason.upper() or "SL" in reason.upper():
                 self.last_trade_time = datetime.now()
+            else:
+                # После прибыльной сделки или TP - без охлаждения
+                self.last_trade_time = datetime.now() - timedelta(hours=2)
             
             self.session_total_pnl += net_pnl
             self.session_total_fees += self.current_trade_fees
@@ -1600,3 +1605,39 @@ Provide a short, helpful answer (max 200 words). Be specific and actionable if p
                                         csv.writer(f).writerow([
                                             datetime.now(), 
                                             self.symbol, 
+                                            self.position_side,
+                                            "TP Executed",
+                                            net,
+                                            self.current_trade_fees,
+                                            self.avg_price,
+                                            fill_price,
+                                            self.safety_count,
+                                            "LIMIT",
+                                            self.current_volatility,
+                                            self.current_confluence
+                                        ])
+                                except: pass
+                                
+                                self.log(f"🏁 TP EXIT: ${net:.2f}", Col.GREEN)
+                                self.current_trade_fees = 0.0
+                                self.current_confluence = 0
+                                self.current_stage = 0
+                                
+                                if self.graceful_stop_mode:
+                                    self.trading_active = False
+                                    self.graceful_stop_mode = False
+                                    self.tg.send("🛑 Stopped (Graceful)", self.get_keyboard())
+                                
+                                self.update_dashboard(force=True)
+                    except Exception as e:
+                        self.log(f"⚠️ Orders check error: {e}", Col.YELLOW)
+                
+                time.sleep(TRAILING_UPDATE_INTERVAL)
+                
+            except KeyboardInterrupt:
+                self.log("\n⏹️  Bot stopped by user", Col.YELLOW)
+                self.running = False
+                break
+            except Exception as e:
+                self.log(f"⚠️ Main loop error: {e}", Col.RED)
+                time.sleep(5)
