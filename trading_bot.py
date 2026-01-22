@@ -1031,10 +1031,15 @@ Provide a short, helpful answer (max 200 words). Be specific and actionable if p
             
             for pos in positions:
                 amt = float(pos.get('contracts', 0) or pos['info'].get('positionAmt', 0))
-                
+
                 if amt != 0:
                     self.in_position = True
-                    self.position_side = "Buy" if amt > 0 else "Sell"
+
+                    # 🔧 FIX: В Hedge mode contracts всегда положительный!
+                    # Используем поле 'side' для определения направления
+                    position_side_from_exchange = pos.get('side') or pos['info'].get('positionSide', 'LONG')
+                    self.position_side = "Buy" if position_side_from_exchange.upper() == "LONG" else "Sell"
+
                     self.total_size_coins = abs(amt)
                     self.avg_price = float(pos.get('entryPrice', 0))
                     if self.avg_price == 0:
@@ -1252,6 +1257,8 @@ Provide a short, helpful answer (max 200 words). Be specific and actionable if p
                 self.log(f"❌ TP: amount rounded to 0 (total_size={self.total_size_coins})", Col.RED)
                 return False
             
+            # 🔧 FIX: В Hedge mode BingX НЕ поддерживает reduceOnly!
+            # Система автоматически определяет закрывающий ордер по positionSide
             order = self.exchange.create_order(
                 symbol=self.symbol,
                 type='limit',
@@ -1259,8 +1266,7 @@ Provide a short, helpful answer (max 200 words). Be specific and actionable if p
                 amount=amount,
                 price=price,
                 params={
-                    'positionSide': 'LONG' if self.position_side == 'Buy' else 'SHORT',
-                    'reduceOnly': True
+                    'positionSide': 'LONG' if self.position_side == 'Buy' else 'SHORT'
                 }
             )
             self.tp_order_id = order['id']
@@ -1421,13 +1427,14 @@ Provide a short, helpful answer (max 200 words). Be specific and actionable if p
             
             side_to_close = "sell" if self.position_side == "Buy" else "buy"
             amount = float(self.exchange.amount_to_precision(self.symbol, real_amount))
-            
-            params = {'reduceOnly': True, 'positionSide': 'LONG' if self.position_side == 'Buy' else 'SHORT'}
+
+            # 🔧 FIX: В Hedge mode BingX НЕ поддерживает reduceOnly
+            params = {'positionSide': 'LONG' if self.position_side == 'Buy' else 'SHORT'}
             order = self.exchange.create_order(
-                symbol=self.symbol, 
-                type='market', 
-                side=side_to_close, 
-                amount=amount, 
+                symbol=self.symbol,
+                type='market',
+                side=side_to_close,
+                amount=amount,
                 params=params
             )
             time.sleep(1) 
