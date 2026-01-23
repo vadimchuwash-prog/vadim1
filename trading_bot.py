@@ -1045,14 +1045,70 @@ Provide a short, helpful answer (max 200 words). Be specific and actionable if p
                     if self.avg_price == 0:
                         self.avg_price = float(pos['info'].get('entryPrice', 0))
                     
-                    # Восстанавливаем base_entry_price
+                    # 🔧 FIX: Восстанавливаем base_entry_price из blackbox.json
+                    # Старый код использовал среднюю цену, что неправильно для расчета DCA
                     if not self.base_entry_price or self.base_entry_price == 0:
-                        self.base_entry_price = self.avg_price
+                        # Пытаемся прочитать из blackbox.json последний ENTRY
+                        try:
+                            import json
+                            with open("blackbox.json", "r", encoding='utf-8') as f:
+                                lines = f.readlines()
+                                for line in reversed(lines):
+                                    try:
+                                        event = json.loads(line)
+                                        if event.get("event") == "ENTRY":
+                                            self.base_entry_price = float(event.get("price", 0))
+                                            if self.base_entry_price > 0:
+                                                self.log(f"🔄 Restored base_entry_price from blackbox: ${self.base_entry_price:.2f}", Col.CYAN)
+                                                break
+                                    except:
+                                        continue
+                        except:
+                            pass
+
+                        # Fallback: используем среднюю (не идеально, но лучше чем ничего)
+                        if not self.base_entry_price or self.base_entry_price == 0:
+                            self.base_entry_price = self.avg_price
+                            self.log(f"⚠️ Using avg_price as base_entry_price: ${self.base_entry_price:.2f} (fallback)", Col.YELLOW)
                     
-                    # Восстанавливаем entry_usd_vol если нужно
+                    # 🔧 FIX: Восстанавливаем entry_usd_vol из blackbox.json
+                    # Старый код использовал текущую позицию, что приводило к 20x увеличению DCA!
                     if self.entry_usd_vol == 0:
-                        real_lev = float(pos.get('leverage', LEVERAGE))
-                        self.entry_usd_vol = (self.avg_price * self.total_size_coins) / real_lev
+                        # Пытаемся прочитать из blackbox.json последний ENTRY
+                        try:
+                            import json
+                            with open("blackbox.json", "r", encoding='utf-8') as f:
+                                lines = f.readlines()
+                                # Ищем последний ENTRY event
+                                for line in reversed(lines):
+                                    try:
+                                        event = json.loads(line)
+                                        if event.get("event") == "ENTRY":
+                                            self.entry_usd_vol = float(event.get("entry_usd", 0))
+                                            if self.entry_usd_vol > 0:
+                                                self.log(f"🔄 Restored entry_usd_vol from blackbox: ${self.entry_usd_vol:.2f}", Col.CYAN)
+                                                break
+                                    except:
+                                        continue
+                        except:
+                            pass
+
+                        # Fallback: если не удалось восстановить из blackbox
+                        if self.entry_usd_vol == 0:
+                            # ВРЕМЕННОЕ решение: используем обратный расчет с поправкой на веса
+                            # Это НЕ точно, но лучше чем завышенный в 7 раз!
+                            real_lev = float(pos.get('leverage', LEVERAGE))
+                            position_usd = (self.avg_price * self.total_size_coins) / real_lev
+
+                            # Если позиция большая, значит были DCA - делим на примерный суммарный вес
+                            _, weights = self.get_dca_parameters()
+                            # Примерная оценка: если были 2 DCA, сумма весов ≈ 1 + 1.6 + 2.2 = 4.8
+                            estimated_total_weight = 1.0
+                            if position_usd > 50:  # Если позиция > $50, вероятно были DCA
+                                estimated_total_weight = 4.8  # Примерно 1+1.6+2.2
+
+                            self.entry_usd_vol = position_usd / estimated_total_weight
+                            self.log(f"⚠️ Estimated entry_usd_vol: ${self.entry_usd_vol:.2f} (fallback)", Col.YELLOW)
                     
                     # Восстанавливаем safety_count (грубая оценка)
                     if self.safety_count == 0 and self.entry_usd_vol > 0:
