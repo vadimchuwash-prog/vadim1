@@ -11,7 +11,7 @@ from datetime import datetime
 
 class TelegramBot:
     def __init__(self, token, chat_id):
-        self.token = token
+        self.token = str(token).strip() if token else ""
         self.chat_id = chat_id
         self.offset = 0
         self._clear_updates()
@@ -20,7 +20,8 @@ class TelegramBot:
         try:
             updates = self.get_updates()
             if updates:
-                self.offset = updates[-1]['id'] + 1
+                # Берем id из последнего элемента списка
+                self.offset = updates[-1].get('update_id', 0) + 1
         except: pass
 
     def send(self, message, keyboard=None):
@@ -29,12 +30,14 @@ class TelegramBot:
             if len(message) > 4000: message = message[:4000] + "\n..."
             payload = {"chat_id": self.chat_id, "text": message, "parse_mode": "HTML"}
             if keyboard: payload["reply_markup"] = json.dumps(keyboard)
-            resp = requests.post(f"https://api.telegram.org/bot{self.token}/sendMessage", data=payload, timeout=10)
             
-            if not resp.json().get('ok'):
-                print(f"❌ TG Send Error: {resp.json().get('description')}")
+            resp = requests.post(f"https://api.telegram.org/bot{self.token}/sendMessage", data=payload, timeout=10)
+            data = resp.json()
+            
+            if not data.get('ok'):
+                print(f"❌ TG Send Error: {data.get('description')}")
                 return None
-            return resp.json().get('result', {}).get('message_id')
+            return data.get('result', {}).get('message_id')
         except Exception as e: 
             print(f"❌ TG Network Error: {e}")
             return None
@@ -56,22 +59,26 @@ class TelegramBot:
             result = []
             for u in updates:
                 if u['update_id'] >= self.offset: self.offset = u['update_id'] + 1
+                
                 msg = u.get('message')
                 cb = u.get('callback_query')
-                if msg:
+                
+                if msg and 'text' in msg:
                     result.append({
-                        "id": u['update_id'],
-                        "text": msg.get('text', ''),
-                        "from_id": msg['from']['id'],
-                        "type": "message"
+                        "update_id": u['update_id'],
+                        "type": "text",
+                        "value": msg.get('text', ''),
+                        "from_id": msg['from']['id']
                     })
                 elif cb:
+                    # Автоматическое подтверждение нажатия, чтобы убрать "часики"
+                    self.answer_callback(cb['id'])
                     result.append({
-                        "id": u['update_id'],
-                        "data": cb['data'],
-                        "callback_id": cb['id'],
-                        "message_id": cb['message']['message_id'],
-                        "type": "callback"
+                        "update_id": u['update_id'],
+                        "type": "callback",
+                        "id": cb['id'],
+                        "msg_id": cb['message']['message_id'],
+                        "value": cb.get('data', '')
                     })
             return result
         except: return []
@@ -83,7 +90,6 @@ class TelegramBot:
         except: pass
     
     def send_photo(self, photo_path, caption=""):
-        """Отправка фото"""
         try:
             with open(photo_path, 'rb') as photo:
                 r = requests.post(f"https://api.telegram.org/bot{self.token}/sendPhoto", 
