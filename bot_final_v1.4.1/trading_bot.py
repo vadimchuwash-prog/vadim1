@@ -32,12 +32,6 @@ from config import *
 from telegram_bot import TelegramBot
 from ai_assistant import AIAssistant
 
-                    result.append({'type': 'callback', 'id': u['callback_query']['id'], 'msg_id': u['callback_query']['message']['message_id'], 'value': u['callback_query']['data']})
-                elif 'message' in u and 'text' in u['message']:
-                    result.append({'type': 'text', 'value': u['message']['text']})
-            return result
-        except: return []
-
 # ==========================================
 # 🤖 HYBRID TRADING BOT v1.1
 # ==========================================
@@ -1518,7 +1512,7 @@ Provide a short, helpful answer (max 200 words). Be specific and actionable if p
         """Главный цикл"""
         last_doctor_check = 0
         last_pnl_log = 0
-        
+
         while self.running:
             try:
                 self.check_telegram_commands()
@@ -1627,5 +1621,45 @@ Provide a short, helpful answer (max 200 words). Be specific and actionable if p
                                 try:
                                     with open(CSV_FILE, 'a', newline='') as f:
                                         csv.writer(f).writerow([
-                                            datetime.now(), 
-                                            self.symbol, 
+                                            datetime.now(),
+                                            self.symbol,
+                                            self.position_side,
+                                            "TP",
+                                            net,
+                                            self.current_trade_fees,
+                                            self.avg_price,
+                                            fill_price,
+                                            self.safety_count,
+                                            "LIMIT",
+                                            self.last_volatility,
+                                            self.last_confluence_score
+                                        ])
+                                except: pass
+
+                                self.reset_position()
+                                self.log_blackbox("TP_CLOSED", {"pnl": net, "price": fill_price})
+
+                                tg_msg = (f"🎯 <b>TP HIT!</b>\n"
+                                         f"💰 PnL: {net:.2f}$ (Net)\n"
+                                         f"📊 Exit: {fill_price:.2f}\n"
+                                         f"🔄 DCA Used: {self.safety_count}\n"
+                                         f"💸 Fees: {self.current_trade_fees:.2f}$")
+                                self.tg.send(tg_msg)
+
+                            elif check['status'] in ['canceled', 'rejected', 'expired']:
+                                self.log("⚠️ TP Order Canceled! Resetting...", Col.RED)
+                                self.tp_order_id = None
+                                self.place_limit_tp()
+
+                    except Exception as e:
+                        self.log(f"⚠️ Order check error: {e}", Col.YELLOW)
+
+                time.sleep(TRAILING_UPDATE_INTERVAL)
+
+            except KeyboardInterrupt:
+                self.log("⏹️ Bot stopped by user", Col.YELLOW)
+                self.running = False
+                break
+            except Exception as e:
+                self.log(f"⚠️ Loop iteration error: {e}", Col.YELLOW)
+                time.sleep(5)
