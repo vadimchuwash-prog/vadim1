@@ -1,7 +1,14 @@
 """
-🤖 HYBRID TRADING BOT v1.4.1
+🤖 HYBRID TRADING BOT v1.4.2
 Основной торговый бот с гибридной системой входа
-КРИТИЧЕСКИЕ ИСПРАВЛЕНИЯ v1.4.1:
+
+КРИТИЧЕСКИЕ ИСПРАВЛЕНИЯ v1.4.2:
+- 🔧 ИСПРАВЛЕНО: position_side теперь определяется из API positionSide (для BingX)
+- 🔧 ИСПРАВЛЕНО: TP теперь выставляется корректно для SHORT позиций
+- 🔧 ИСПРАВЛЕНО: DCA теперь выставляется в правильном направлении для SHORT
+- 🔧 ИСПРАВЛЕНО: PnL расчёт теперь корректный для SHORT позиций
+
+v1.4.1:
 - Детальное логирование place_limit_tp()
 - Детальное логирование place_limit_dca()
 - Исправлено сравнение ID ордеров
@@ -1030,31 +1037,47 @@ Provide a short, helpful answer (max 200 words). Be specific and actionable if p
         return False, 0
 
     def _sync_position_with_exchange(self):
-        """Синхронизация позиции - УЛУЧШЕННАЯ"""
+        """Синхронизация позиции - ИСПРАВЛЕНО v1.4.2"""
         try:
             positions = self.exchange.fetch_positions([self.symbol])
             found = False
-            
+
             for pos in positions:
                 amt = float(pos.get('contracts', 0) or pos['info'].get('positionAmt', 0))
-                
+
                 if amt != 0:
                     self.in_position = True
-                    self.position_side = "Buy" if amt > 0 else "Sell"
+
+                    # 🔧 ИСПРАВЛЕНИЕ: Используем positionSide из API (для BingX)
+                    # BingX возвращает ПОЛОЖИТЕЛЬНОЕ amount даже для SHORT!
+                    position_side_from_api = pos.get('side') or pos['info'].get('positionSide', '')
+
+                    # 🆕 v1.4.2: Детальное логирование для диагностики
+                    self.log(f"🔍 Sync Debug: amt={amt}, api_side={position_side_from_api}", Col.GRAY)
+
+                    if position_side_from_api in ['LONG', 'long', 'Long']:
+                        self.position_side = "Buy"
+                    elif position_side_from_api in ['SHORT', 'short', 'Short']:
+                        self.position_side = "Sell"
+                    else:
+                        # Фоллбэк на старый метод (для других бирж)
+                        self.position_side = "Buy" if amt > 0 else "Sell"
+                        self.log(f"⚠️ Sync: Unknown positionSide '{position_side_from_api}', using fallback", Col.YELLOW)
+
                     self.total_size_coins = abs(amt)
                     self.avg_price = float(pos.get('entryPrice', 0))
                     if self.avg_price == 0:
                         self.avg_price = float(pos['info'].get('entryPrice', 0))
-                    
+
                     # Восстанавливаем base_entry_price
                     if not self.base_entry_price or self.base_entry_price == 0:
                         self.base_entry_price = self.avg_price
-                    
+
                     # Восстанавливаем entry_usd_vol если нужно
                     if self.entry_usd_vol == 0:
                         real_lev = float(pos.get('leverage', LEVERAGE))
                         self.entry_usd_vol = (self.avg_price * self.total_size_coins) / real_lev
-                    
+
                     # Восстанавливаем safety_count (грубая оценка)
                     if self.safety_count == 0 and self.entry_usd_vol > 0:
                         position_usd = (self.avg_price * self.total_size_coins) / LEVERAGE
@@ -1068,7 +1091,7 @@ Provide a short, helpful answer (max 200 words). Be specific and actionable if p
                                     self.safety_count = i + 1
                                     self.log(f"🔄 Restored DCA level: {self.safety_count}", Col.CYAN)
                                     break
-                    
+
                     found = True
                     self.log(f"🔄 Sync: {self.position_side} {self.total_size_coins:.4f} @ {self.avg_price:.2f}", Col.BLUE)
                     break
