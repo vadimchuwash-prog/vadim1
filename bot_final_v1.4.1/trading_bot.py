@@ -677,145 +677,239 @@ Provide a short, helpful answer (max 200 words). Be specific and actionable if p
             self.log_debug(traceback.format_exc())
 
     def update_dashboard(self, force=False):
-        """📊 🆕 УЛУЧШЕННЫЙ ДАШБОРД"""
+        """📊 🆕 v1.4.2 СУПЕР-ДАШБОРД - Максимальная информативность"""
         now = time.time()
         if not force and (now - self.last_dashboard_update < 15): return
         self.last_dashboard_update = now
-        
+
         # Статус
         status_icon = "🟢" if self.trading_active else "🔴"
         status_text = "ACTIVE" if self.trading_active else "STOPPED"
         if self.graceful_stop_mode:
             status_icon = "🟡"
             status_text = "STOPPING..."
-        
+
         # Баланс и прогресс
         balance_change = self.balance - self.start_balance
         balance_pct = (balance_change / self.start_balance * 100) if self.start_balance > 0 else 0
         balance_icon = "📈" if balance_change >= 0 else "📉"
-        
-        # Винрейт
+
+        # Винрейт и статистика
         total_trades = self.session_wins + self.session_losses
         win_rate = (self.session_wins / total_trades * 100) if total_trades > 0 else 0
         wr_icon = "🟢" if win_rate >= 60 else "🟡" if win_rate >= 50 else "🔴"
-        
-        # Рыночные условия
+        avg_pnl = self.session_total_pnl / total_trades if total_trades > 0 else 0
+
+        # Рыночные условия + индикаторы
         vol_icon = "🔥" if self.current_volatility > 0.004 else "📊" if self.current_volatility > 0.0025 else "😴"
         trend_icon = "📈" if self.is_trending_market else "↔️"
-        
+
+        # Получаем индикаторы
+        rsi_val = adx_val = macd_val = 0
+        if self.current_market_df is not None:
+            try:
+                rsi_val = self.current_market_df['RSI'].iloc[-2]
+                adx_val = self.current_market_df['ADX'].iloc[-2]
+                macd_val = self.current_market_df['MACD_hist'].iloc[-2]
+            except: pass
+
+        rsi_icon = "🔥" if rsi_val > 70 else "❄️" if rsi_val < 30 else "➖"
+        macd_icon = "📈" if macd_val > 0 else "📉"
+
         # Начало дашборда
-        dash = f"""╔══════════════════════════════
-║ 🚀 <b>HYBRID BOT v1.1</b> {status_icon} {status_text}
-╠══════════════════════════════
+        dash = f"""╔════════════════════════════════════
+║ 🚀 <b>HYBRID BOT v1.4.2</b> {status_icon} {status_text}
+╠════════════════════════════════════
 ║
 ║ 💰 <b>БАЛАНС</b>
 ║ ├─ Текущий: <b>${self.balance:.2f}</b>
 ║ ├─ Стартовый: ${self.start_balance:.2f}
-║ └─ Изменение: {balance_icon} <b>${balance_change:+.2f}</b> ({balance_pct:+.2f}%)
+║ ├─ Изменение: {balance_icon} <b>${balance_change:+.2f}</b> ({balance_pct:+.2f}%)
+║ └─ ROI: <b>{balance_pct:+.2f}%</b> от стартового
 ║
-║ 📊 <b>СЕССИЯ</b>
+║ 📊 <b>СТАТИСТИКА СЕССИИ</b>
 ║ ├─ PnL: <b>${self.session_total_pnl:+.2f}</b>
 ║ ├─ Комиссии: -${self.session_total_fees:.2f}
-║ ├─ Сделок: {total_trades} (W:{self.session_wins} / L:{self.session_losses})
-║ └─ Винрейт: {wr_icon} <b>{win_rate:.1f}%</b>
+║ ├─ Сделок: {total_trades} (✅{self.session_wins} / ❌{self.session_losses})
+║ ├─ Винрейт: {wr_icon} <b>{win_rate:.1f}%</b>
+║ └─ Средний PnL: ${avg_pnl:+.2f}
 ║
-║ 🌍 <b>РЫНОК</b>
-║ ├─ Цена: <b>${self.last_price:.2f}</b>
+║ 🌍 <b>РЫНОК BTC/USDT</b>
+║ ├─ Цена: <b>${self.last_price:,.2f}</b>
 ║ ├─ Волатильность: {vol_icon} {self.current_volatility*100:.3f}%
-║ └─ Режим: {trend_icon} {'TREND' if self.is_trending_market else 'RANGE'}
+║ ├─ Режим: {trend_icon} <b>{'TREND' if self.is_trending_market else 'RANGE'}</b>
+║ ├─ RSI(14): {rsi_icon} {rsi_val:.1f}
+║ ├─ ADX(14): {adx_val:.1f}
+║ └─ MACD: {macd_icon} {macd_val:.4f}
 """
-        
-        # Если в позиции - добавляем детали
+
+        # Если в позиции - ДЕТАЛЬНАЯ ИНФОРМАЦИЯ
         if self.in_position:
             side_mult = 1 if self.position_side == "Buy" else -1
             unrealized = (self.last_price - self.avg_price) * self.total_size_coins * side_mult
             margin = (self.avg_price * self.total_size_coins) / LEVERAGE
             pnl_pct = (unrealized / margin * 100) if margin > 0 else 0
             pnl_icon = "🟢" if unrealized >= 0 else "🔴"
-            
+
+            # ROI от баланса
+            roi_balance = (unrealized / self.balance * 100) if self.balance > 0 else 0
+
             # Stage icon
             stage_icons = ["", "🟡", "🟠", "🔴"]
             stage_icon = stage_icons[self.current_stage] if self.current_stage <= 3 else "⭐"
-            
+
             # Время в позиции
             if self.trade_start_time:
                 time_in_trade = (datetime.now() - self.trade_start_time).total_seconds()
                 hours = int(time_in_trade // 3600)
                 minutes = int((time_in_trade % 3600) // 60)
-                time_str = f"{hours}h {minutes}m" if hours > 0 else f"{minutes}m"
+                seconds = int(time_in_trade % 60)
+                if hours > 0:
+                    time_str = f"{hours}ч {minutes}м"
+                elif minutes > 0:
+                    time_str = f"{minutes}м {seconds}с"
+                else:
+                    time_str = f"{seconds}с"
             else:
                 time_str = "N/A"
-            
-            # TP дистанция
+
+            # TP дистанция и цена
             tp_distance = float(self.get_dynamic_tp_steps())
             target_tp = self.avg_price * (1 + (tp_distance * side_mult))
-            dist_tp_pct = abs((target_tp - self.last_price) / self.last_price * 100)
-            
-            # DCA дистанция
+            dist_tp_pct = ((target_tp - self.last_price) / self.last_price * 100) * side_mult
+            dist_tp_usd = (target_tp - self.last_price) * self.total_size_coins * side_mult
+            tp_progress = "▰▰▰▰▰▰▰▱▱▱" if dist_tp_pct > 0.4 else "▰▰▰▰▰▰▱▱▱▱" if dist_tp_pct > 0.3 else "▰▰▰▰▰▱▱▱▱▱" if dist_tp_pct > 0.2 else "▰▰▰▱▱▱▱▱▱▱"
+
+            # DCA дистанция и прогресс
             if self.safety_count < SAFETY_ORDERS_COUNT:
-                dists, _ = self.get_dca_parameters()
+                dists, weights = self.get_dca_parameters()
                 mult = self.get_smart_distance_multiplier(self.safety_count)
-                target_dca = self.base_entry_price * (1 + ((dists[self.safety_count] * mult) * (-side_mult)))
-                dist_dca_pct = abs((self.last_price - target_dca) / self.last_price * 100)
-                dca_str = f"{dist_dca_pct:.2f}%"
+                base_dist = dists[self.safety_count]
+                actual_dist = base_dist * mult
+                target_dca = self.base_entry_price * (1 + (actual_dist * (-side_mult)))
+                dist_dca_pct = ((self.last_price - target_dca) / self.last_price * 100) * side_mult
+                dist_dca_usd = abs(target_dca - self.last_price)
+                dca_weight = weights[self.safety_count]
+                dca_str = f"${target_dca:,.2f} ({dist_dca_pct:+.2f}%, ${dist_dca_usd:.0f})"
+                mult_str = f"×{mult:.2f}"
             else:
-                dca_str = "MAX"
-            
+                dca_str = "MAX LEVEL"
+                mult_str = "N/A"
+
+            # DCA Прогресс-бар
+            dca_progress_filled = "🟩" * self.safety_count
+            dca_progress_empty = "⬜" * (SAFETY_ORDERS_COUNT - self.safety_count)
+            dca_progress_bar = dca_progress_filled + dca_progress_empty
+
+            # Стоп-лосс дистанция
+            max_loss = self.get_effective_balance() * MAX_ACCOUNT_LOSS_PCT
+            sl_price = self.avg_price - (max_loss / self.total_size_coins) if side_mult == 1 else self.avg_price + (max_loss / self.total_size_coins)
+            dist_sl_pct = ((sl_price - self.last_price) / self.last_price * 100) * side_mult
+            dist_sl_usd = abs(sl_price - self.last_price)
+            sl_reserve_pct = abs(dist_sl_pct)
+            sl_icon = "🟢" if sl_reserve_pct > 15 else "🟡" if sl_reserve_pct > 10 else "🔴"
+
             # Trailing status
             if self.trailing_active:
                 trail_icon = "🎯"
-                trail_str = f"ACTIVE @ ${self.trailing_peak_price:.2f}"
+                trail_profit = (self.trailing_peak_price - self.avg_price) * self.total_size_coins * side_mult
+                trail_str = f"ACTIVE @ ${self.trailing_peak_price:.2f} (+${trail_profit:.2f})"
             else:
+                needed_for_trail = (self.avg_price * (1 + TRAILING_ACTIVATION_PCT * side_mult)) - self.last_price
+                needed_pct = abs(needed_for_trail / self.last_price * 100)
                 trail_icon = "💤"
-                trail_str = "Waiting..."
-            
+                trail_str = f"Нужно +{needed_pct:.2f}% (${abs(needed_for_trail * self.total_size_coins):.0f})"
+
+            # Маржа
+            used_margin = (self.avg_price * self.total_size_coins) / LEVERAGE
+            used_margin_pct = (used_margin / self.balance * 100) if self.balance > 0 else 0
+
+            # Цена входа расстояние
+            entry_diff_pct = ((self.last_price - self.avg_price) / self.avg_price * 100) * side_mult
+            entry_diff_usd = (self.last_price - self.avg_price) * self.total_size_coins * side_mult
+
             dash += f"""║
-╠══════════════════════════════
-║ 📍 <b>ПОЗИЦИЯ</b> {stage_icon} Stage{self.current_stage}
-╠══════════════════════════════
+╠════════════════════════════════════
+║ 📍 <b>АКТИВНАЯ ПОЗИЦИЯ</b> {stage_icon} Stage{self.current_stage}
+╠════════════════════════════════════
 ║
-║ 🎯 <b>ВХОД</b>
-║ ├─ Сторона: <b>{"📈 LONG" if self.position_side == "Buy" else "📉 SHORT"}</b>
-║ ├─ Цена входа: ${self.avg_price:.4f}
-║ ├─ Размер: {self.total_size_coins:.4f} BTC
+║ 🎯 <b>ПАРАМЕТРЫ ВХОДА</b>
+║ ├─ Направление: <b>{"📈 LONG" if self.position_side == "Buy" else "📉 SHORT"}</b>
+║ ├─ Средняя цена: <b>${self.avg_price:,.4f}</b>
+║ ├─ Текущая цена: ${self.last_price:,.4f}
+║ ├─ От входа: {entry_diff_pct:+.2f}% (${entry_diff_usd:+.2f})
+║ ├─ Размер: {self.total_size_coins:.6f} BTC
 ║ ├─ Объём: ${self.entry_usd_vol:.2f}
+║ ├─ Маржа: ${used_margin:.2f} ({used_margin_pct:.1f}% баланса)
+║ ├─ Плечо: {LEVERAGE}x
 ║ ├─ Confluence: ⭐ {self.current_confluence}/7
 ║ └─ Время: ⏱️ {time_str}
 ║
-║ 💹 <b>P&L</b>
-║ ├─ Нереализ.: {pnl_icon} <b>${unrealized:+.2f}</b>
-║ ├─ ROI: <b>{pnl_pct:+.2f}%</b>
-║ └─ Комиссии: -${self.current_trade_fees:.2f}
+║ 💹 <b>ПРИБЫЛЬ / УБЫТОК</b>
+║ ├─ Нереализ. PnL: {pnl_icon} <b>${unrealized:+.2f}</b>
+║ ├─ ROI от маржи: <b>{pnl_pct:+.2f}%</b>
+║ ├─ ROI от баланса: <b>{roi_balance:+.2f}%</b>
+║ ├─ Комиссии: -${self.current_trade_fees:.2f}
+║ └─ Чистая: ${unrealized - self.current_trade_fees:+.2f}
 ║
-║ 🔨 <b>DCA СЕТКА</b>
+║ 🔨 <b>DCA СЕТКА</b> ({('TREND' if self.is_trending_market else 'RANGE')})
 ║ ├─ Уровень: <b>{self.safety_count}/{SAFETY_ORDERS_COUNT}</b>
+║ ├─ Прогресс: {dca_progress_bar}
 ║ ├─ След. DCA: {dca_str}
-║ └─ Режим: {trend_icon} {'TREND' if self.is_trending_market else 'RANGE'}
+║ ├─ Вес: {dca_weight}x (базовый вход)
+║ └─ Множитель: {mult_str} (ATR×RSI×GEO)
 ║
-║ 🏁 <b>ВЫХОД</b>
-║ ├─ TP дист.: {dist_tp_pct:.2f}%
-║ ├─ TP цена: ${target_tp:.4f}
-║ └─ Trailing: {trail_icon} {trail_str}
+║ 🎯 <b>TAKE PROFIT</b>
+║ ├─ Целевая цена: <b>${target_tp:,.4f}</b>
+║ ├─ Дистанция: {dist_tp_pct:+.2f}% (${dist_tp_usd:+.2f})
+║ ├─ Динамич. TP: {tp_distance*100:.2f}% (0.35% + ATR×0.5)
+║ ├─ Прогресс: {tp_progress}
+║ └─ ID ордера: {self.tp_order_id or "N/A"}
+║
+║ 🛡️ <b>ЗАЩИТА</b>
+║ ├─ Stop Loss: ${sl_price:,.4f}
+║ ├─ Запас: {sl_icon} {sl_reserve_pct:.2f}% (${dist_sl_usd:.0f})
+║ ├─ Макс. убыток: -${max_loss:.2f} (-{MAX_ACCOUNT_LOSS_PCT*100}%)
+║ └─ SL ID: {self.sl_order_id or "N/A"}
+║
+║ 🏃 <b>TRAILING STOP</b>
+║ ├─ Статус: {trail_icon} {trail_str}
+║ ├─ Активация: +{TRAILING_ACTIVATION_PCT*100}%
+║ └─ Callback: -{TRAILING_CALLBACK_PCT*100}%
 """
         else:
-            # Нет позиции
+            # НЕТ ПОЗИЦИИ - показываем условия для входа
             dash += f"""║
-╠══════════════════════════════
+╠════════════════════════════════════
 ║ 💤 <b>НЕТ ПОЗИЦИИ</b>
-╠══════════════════════════════
+╠════════════════════════════════════
 ║
-║ Ожидание сигнала...
+║ 🔍 <b>ПОИСК СИГНАЛА...</b>
+║ ├─ Сделок сегодня: {self.trades_today}/{DAILY_TRADE_LIMIT}
+║ ├─ RSI безопасный: {RSI_SAFE_MIN}-{RSI_SAFE_MAX} (сейчас: {rsi_val:.1f})
+║ ├─ Мин. конфлюенс: {MIN_CONFLUENCE_SCORE}/7
+║ └─ Мин. волатильность: {MIN_VOLATILITY_PCT*100:.3f}%
 ║
-║ 📋 Сегодня сделок: {self.trades_today}/{DAILY_TRADE_LIMIT}
+║ 📋 <b>УСЛОВИЯ ВХОДА:</b>
+║ ├─ ✅ EMA9 пересекает EMA15
+║ ├─ ✅ Momentum подтверждён
+║ ├─ ✅ Волатильность > {MIN_VOLATILITY_PCT*100:.3f}%
+║ ├─ ✅ RSI в безопасной зоне
+║ ├─ ✅ Объём > {MIN_VOLUME_RATIO}x среднего
+║ ├─ ✅ Микротренд ({MIN_MICROTREND_CANDLES} свечи)
+║ └─ ✅ Защита от ножа (< {KNIFE_PROTECTION_PCT*100}%)
 """
-        
-        # Футер
-        dash += """║
-╚══════════════════════════════"""
-        
-        if not self.dashboard_msg_id: 
+
+        # Футер с timestamp
+        current_time = datetime.now().strftime("%H:%M:%S")
+        dash += f"""║
+╠════════════════════════════════════
+║ 🕐 Обновлено: {current_time}
+╚════════════════════════════════════"""
+
+        if not self.dashboard_msg_id:
             self.dashboard_msg_id = self.tg.send(dash, self.get_keyboard())
-        else: 
+        else:
             success = self.tg.edit_message(self.dashboard_msg_id, dash, self.get_keyboard())
             if not success: self.dashboard_msg_id = None
 
@@ -1192,7 +1286,7 @@ Provide a short, helpful answer (max 200 words). Be specific and actionable if p
             price = float(self.exchange.price_to_precision(self.symbol, sl_price))
             amount = float(self.exchange.amount_to_precision(self.symbol, self.total_size_coins))
             
-            # Стоп-маркет ордер
+            # Стоп-маркет ордер (BingX Hedge mode - БЕЗ reduceOnly)
             order = self.exchange.create_order(
                 symbol=self.symbol,
                 type='stop_market',
@@ -1200,8 +1294,7 @@ Provide a short, helpful answer (max 200 words). Be specific and actionable if p
                 amount=amount,
                 params={
                     'stopPrice': price,
-                    'positionSide': 'LONG' if self.position_side == 'Buy' else 'SHORT',
-                    'reduceOnly': True
+                    'positionSide': 'LONG' if self.position_side == 'Buy' else 'SHORT'
                 }
             )
             
