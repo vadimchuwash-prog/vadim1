@@ -7,6 +7,8 @@
 - 🔧 ИСПРАВЛЕНО: TP теперь выставляется корректно для SHORT позиций
 - 🔧 ИСПРАВЛЕНО: DCA теперь выставляется в правильном направлении для SHORT
 - 🔧 ИСПРАВЛЕНО: PnL расчёт теперь корректный для SHORT позиций
+- 🔧 ИСПРАВЛЕНО: PnL Audit - учитываются комиссии, порог повышен до 25% + $1
+- 🔧 УЛУЧШЕНО: Меньше ложных уведомлений о PnL mismatch
 
 v1.4.1:
 - Детальное логирование place_limit_tp()
@@ -144,47 +146,51 @@ class HybridTradingBot:
     
     def check_pnl_audit(self):
         """
-        🆕 v1.3: PnL Audit - проверка корректности расчётов
-        Сравнивает расчётный PnL с данными биржи
-        Детектор скрытых комиссий, багов, лагов
+        🆕 v1.4.2: PnL Audit - УЛУЧШЕННАЯ проверка корректности расчётов
+        Сравнивает расчётный PnL с данными биржи с учётом комиссий
         """
         if not self.in_position or self.total_size_coins == 0:
             return
-        
+
         try:
-            # Расчётный PnL
+            # Расчётный PnL (с учётом комиссий)
             side_mult = 1 if self.position_side == "Buy" else -1
-            calc_pnl = (self.last_price - self.avg_price) * self.total_size_coins * side_mult
-            
+            gross_pnl = (self.last_price - self.avg_price) * self.total_size_coins * side_mult
+            calc_pnl = gross_pnl - self.current_trade_fees  # Вычитаем комиссии
+
             # PnL от биржи
             positions = self.exchange.fetch_positions([self.symbol])
             for pos in positions:
                 amt = float(pos.get('contracts', 0) or pos['info'].get('positionAmt', 0))
-                
+
                 if abs(amt) > 0.0001:
                     exchange_pnl = float(pos.get('unrealizedPnl', 0))
-                    
-                    # Проверка расхождения (только если PnL значимый)
-                    if abs(exchange_pnl) > 1.0:
-                        diff = abs(calc_pnl - exchange_pnl)
-                        diff_pct = (diff / abs(exchange_pnl)) * 100 if abs(exchange_pnl) > 0 else 0
-                        
-                        if diff_pct > 10:  # 10% расхождение
-                            msg = (f"⚠️ <b>PnL MISMATCH!</b>\n"
-                                   f"Расчёт: {calc_pnl:.2f}$\n"
-                                   f"Биржа: {exchange_pnl:.2f}$\n"
-                                   f"Разница: {diff_pct:.1f}%")
-                            
-                            self.log(msg.replace('<b>', '').replace('</b>', ''), Col.RED)
-                            self.tg.send(msg)
-                            
-                            # Логируем в blackbox
-                            self.log_blackbox("PNL_MISMATCH", {
-                                "calc_pnl": calc_pnl,
-                                "exchange_pnl": exchange_pnl,
-                                "diff": diff,
-                                "diff_pct": diff_pct
-                            })
+
+                    # 🔧 v1.4.2: Улучшенная проверка расхождения
+                    # Требуем И процентную разницу >25% И абсолютную >$1
+                    diff = abs(calc_pnl - exchange_pnl)
+                    diff_pct = (diff / abs(exchange_pnl)) * 100 if abs(exchange_pnl) > 0.01 else 0
+
+                    # Срабатываем только при ЗНАЧИТЕЛЬНОМ расхождении
+                    if diff_pct > 25 and diff > 1.0:
+                        msg = (f"⚠️ <b>PnL MISMATCH!</b>\n"
+                               f"📊 Расчёт: {calc_pnl:.2f}$ (gross: {gross_pnl:.2f}$)\n"
+                               f"🏦 Биржа: {exchange_pnl:.2f}$\n"
+                               f"❌ Разница: {diff:.2f}$ ({diff_pct:.1f}%)\n"
+                               f"💸 Комиссии: -{self.current_trade_fees:.2f}$")
+
+                        self.log(msg.replace('<b>', '').replace('</b>', ''), Col.RED)
+                        self.tg.send(msg)
+
+                        # Логируем в blackbox
+                        self.log_blackbox("PNL_MISMATCH", {
+                            "gross_pnl": gross_pnl,
+                            "calc_pnl": calc_pnl,
+                            "exchange_pnl": exchange_pnl,
+                            "diff": diff,
+                            "diff_pct": diff_pct,
+                            "fees": self.current_trade_fees
+                        })
                     break
         except Exception as e:
             self.log(f"⚠️ PnL Audit error: {e}", Col.YELLOW)
