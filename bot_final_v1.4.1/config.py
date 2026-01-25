@@ -25,7 +25,7 @@ import os
 
 # 🔑 API KEYS
 AI_GEMINI_KEY = os.getenv("GEMINI_API_KEY", "AIzaSyDHrTaNZo8pR55GNmYLASC3yKtx-Y1HRcU")
-AI_MODEL_NAME = "gemini-2.0-flash-exp"  # Исправлено: было "gemini-flash-lates"
+AI_MODEL_NAME = "gemini-1.5-flash"  # Стабильная модель для вашего API ключа
 TG_BOT_TOKEN = ""
 
 HAS_AI = True
