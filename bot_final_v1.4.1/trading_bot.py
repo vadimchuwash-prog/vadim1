@@ -75,7 +75,12 @@ class HybridTradingBot:
         # Трейлинг
         self.trailing_active = False
         self.trailing_peak_price = 0.0
-        
+
+        # 🆕 v1.4.2: Range Trailing (для режима Range)
+        self.range_trailing_enabled = False  # Включается для Range позиций
+        self.range_peak_price = 0.0
+        self.range_trailing_callback_pct = 0.0005  # 0.05% откат от пика
+
         # Статистика
         self.session_total_pnl = 0.0
         self.session_total_fees = 0.0
@@ -506,26 +511,36 @@ class HybridTradingBot:
         try:
             import google.genai as genai
             client = genai.Client(api_key=self.ai_key)
+
             try:
-                with open(LOG_FILE, 'r', encoding='utf-8') as f: 
+                with open(LOG_FILE, 'r', encoding='utf-8') as f:
                     logs = "".join(f.readlines()[-40:])
-            except: 
+            except:
                 logs = "Logs unavailable"
 
             m_info = "N/A"
             if self.current_market_df is not None:
                 row = self.current_market_df.iloc[-2]
                 m_info = f"Close:{row['close']}, ADX:{row['ADX']:.1f}, RSI:{row['RSI']:.1f}"
-            
-            prompt = f"Ты — AI-аналитик. Рынок: {m_info}. Логи: {logs}. Дай совет."
+
+            prompt = f"Ты — AI-аналитик торгового бота. Рынок: {m_info}. Последние логи: {logs}. Дай краткий анализ и совет (макс 200 слов)."
             response = client.models.generate_content(model=self.ai_model_name, contents=prompt)
-            self.tg.send(f"🤖 <b>AI REPORT:</b>\n{response.text}")
-        except: 
-            pass
+            self.tg.send(f"🤖 <b>AI REPORT:</b>\n\n{response.text}")
+            self.log("✅ AI Report sent", Col.GREEN)
+
+        except ImportError as e:
+            error_msg = "❌ <b>AI Error:</b> Библиотека google-genai не установлена.\n\nУстановите: pip install google-genai"
+            self.tg.send(error_msg)
+            self.log(f"❌ AI Import Error: {e}", Col.RED)
+
+        except Exception as e:
+            error_msg = f"❌ <b>AI Error:</b> {str(e)[:200]}"
+            self.tg.send(error_msg)
+            self.log(f"❌ AI Report Error: {e}", Col.RED)
 
     def trigger_ai_chat_reply(self, user_question):
         """🆕 AI ЧАТ - общение с ботом"""
-        if not self.has_ai: 
+        if not self.has_ai:
             self.tg.send("⚠️ AI chat unavailable (no API key or library)")
             return
         t = threading.Thread(target=self._generate_ai_chat_response, args=(user_question,), daemon=True)
@@ -577,8 +592,12 @@ Provide a short, helpful answer (max 200 words). Be specific and actionable if p
             response = client.models.generate_content(model=self.ai_model_name, contents=prompt)
             self.tg.send(f"💬 <b>AI:</b> {response.text}")
             
+        except ImportError as e:
+            self.tg.send(f"❌ <b>AI Error:</b> Библиотека google-genai не установлена.\n\nУстановите: pip install google-genai")
+            self.log(f"❌ AI Chat Import Error: {e}", Col.RED)
         except Exception as e:
-            self.tg.send(f"❌ AI chat error: {str(e)[:100]}")
+            self.tg.send(f"❌ AI chat error: {str(e)[:200]}")
+            self.log(f"❌ AI Chat Error: {e}", Col.RED)
 
     def perform_health_check(self):
         """🆕 v1.2.1 - АГРЕССИВНАЯ проверка здоровья позиции"""
@@ -774,7 +793,11 @@ Provide a short, helpful answer (max 200 words). Be specific and actionable if p
                 dca_str = "MAX"
             
             # Trailing status
-            if self.trailing_active:
+            if self.range_trailing_enabled:
+                trail_icon = "🎯"
+                callback_pct = self.range_trailing_callback_pct * 100
+                trail_str = f"RANGE @ ${self.range_peak_price:.2f} (-{callback_pct:.2f}%)"
+            elif self.trailing_active:
                 trail_icon = "🎯"
                 trail_str = f"ACTIVE @ ${self.trailing_peak_price:.2f}"
             else:
@@ -824,12 +847,15 @@ Provide a short, helpful answer (max 200 words). Be specific and actionable if p
         # Футер
         dash += """║
 ╚══════════════════════════════"""
-        
-        if not self.dashboard_msg_id: 
+
+        if not self.dashboard_msg_id:
             self.dashboard_msg_id = self.tg.send(dash, self.get_keyboard())
-        else: 
+        else:
             success = self.tg.edit_message(self.dashboard_msg_id, dash, self.get_keyboard())
-            if not success: self.dashboard_msg_id = None
+            # Если редактирование не удалось, попробуем создать новое сообщение только один раз
+            if not success:
+                self.log("⚠️ Failed to edit dashboard, sending new one", Col.YELLOW)
+                self.dashboard_msg_id = self.tg.send(dash, self.get_keyboard())
 
     def get_real_order_fee(self, order_id):
         """Получение реальной комиссии"""
@@ -893,33 +919,55 @@ Provide a short, helpful answer (max 200 words). Be specific and actionable if p
         """Обработка команд Telegram"""
         for up in self.tg.get_updates():
             if up['type'] == 'callback':
-                cid, mid = up['id'], up['msg_id']
-                if up['value'] == "start_bot":
+                # 🔧 v1.4.2: Исправлен формат обработки callback
+                callback_id = up['callback_id']
+                msg_id = up['message_id']
+                data = up['data']
+
+                # Подтверждаем получение callback (убирает "часики")
+                self.tg.answer_callback(callback_id)
+
+                if data == "start_bot":
                     self.trading_active = True
                     self.graceful_stop_mode = False
-                    self.tg.edit_message(mid, "✅ Started!", self.get_keyboard())
-                elif up['value'] == "graceful_stop":
+                    self.tg.edit_message(msg_id, "✅ Бот запущен!", self.get_keyboard())
+                    self.update_dashboard(force=True)
+
+                elif data == "graceful_stop":
                     self.graceful_stop_mode = True
-                    self.tg.edit_message(mid, "⏳ Finishing trade...", self.get_keyboard())
-                    if not self.in_position: 
+                    self.tg.edit_message(msg_id, "⏳ Завершаю текущую сделку...", self.get_keyboard())
+                    if not self.in_position:
                         self.trading_active = False
                         self.graceful_stop_mode = False
-                elif up['value'] == "cancel_stop":
+                        self.update_dashboard(force=True)
+
+                elif data == "cancel_stop":
                     self.graceful_stop_mode = False
-                    self.tg.edit_message(mid, "✅ Continued.", self.get_keyboard())
-                elif up['value'] == "panic_sell":
-                    self.close_position_market("Panic Sell")
-                elif up['value'] == "balance":
-                    self.refresh_wallet_status()
-                    self.tg.edit_message(mid, f"💵 Bal: ${self.balance:.2f}", self.get_keyboard())
-                elif up['value'] == "refresh":
+                    self.tg.edit_message(msg_id, "✅ Остановка отменена!", self.get_keyboard())
                     self.update_dashboard(force=True)
-                elif up['value'] == "ai_report":
+
+                elif data == "panic_sell":
+                    self.tg.answer_callback(callback_id, "⚠️ Экстренное закрытие!")
+                    self.close_position_market("Panic Sell")
+
+                elif data == "balance":
+                    self.refresh_wallet_status()
+                    bal_msg = f"💵 <b>Баланс:</b> ${self.balance:.2f}\n"
+                    bal_msg += f"📈 <b>Пик:</b> ${self.peak_balance:.2f}\n"
+                    bal_msg += f"{'📊' if self.balance >= self.start_balance else '📉'} <b>Изменение:</b> ${self.balance - self.start_balance:.2f}"
+                    self.tg.edit_message(msg_id, bal_msg, self.get_keyboard())
+
+                elif data == "refresh":
+                    self.tg.answer_callback(callback_id, "🔄 Обновляю...")
+                    self.update_dashboard(force=True)
+
+                elif data == "ai_report":
+                    self.tg.answer_callback(callback_id, "🤖 Генерирую отчёт...")
                     self.trigger_ai_report_thread(manual=True)
-            
+
             # 🆕 Обработка текстовых сообщений (AI чат)
-            elif up['type'] == 'text':
-                text = up['value'].strip()
+            elif up['type'] == 'message':
+                text = up.get('text', '').strip()
                 if text.startswith('?') or text.startswith('/ask '):
                     q = text.lstrip('?/').replace('ask', '').strip()
                     if q:
@@ -1015,10 +1063,75 @@ Provide a short, helpful answer (max 200 words). Be specific and actionable if p
                 return True
         return False
 
+    def check_range_trailing(self):
+        """
+        🆕 v1.4.2: Range Trailing режим
+        Для режима Range: закрывает позицию если откат от пика > 0.05%
+        TP продолжает двигаться вверх по мере роста цены
+        """
+        if not self.range_trailing_enabled or not self.in_position:
+            return False
+
+        current_price = self.last_price
+        side_mult = 1 if self.position_side == "Buy" else -1
+
+        # Обновляем пик цены
+        if self.position_side == "Buy":
+            if current_price > self.range_peak_price:
+                old_peak = self.range_peak_price
+                self.range_peak_price = current_price
+                self.log(f"📈 Range Peak Updated: ${old_peak:.2f} → ${current_price:.2f}", Col.CYAN)
+
+                # Обновляем TP вверх
+                self._update_tp_for_range_trailing()
+
+            # Проверяем откат от пика
+            callback = (self.range_peak_price - current_price) / self.range_peak_price
+
+        else:  # SHORT
+            if current_price < self.range_peak_price or self.range_peak_price == 0:
+                old_peak = self.range_peak_price
+                self.range_peak_price = current_price
+                self.log(f"📉 Range Peak Updated: ${old_peak:.2f} → ${current_price:.2f}", Col.CYAN)
+
+                # Обновляем TP вниз
+                self._update_tp_for_range_trailing()
+
+            # Проверяем откат от пика
+            callback = (current_price - self.range_peak_price) / self.range_peak_price
+
+        # Если откат больше порога - закрываем
+        if callback >= self.range_trailing_callback_pct:
+            pnl_pct = (current_price - self.avg_price) / self.avg_price * side_mult
+            self.log(f"🔔 RANGE TRAILING STOP! Откат: {callback*100:.3f}%", Col.MAGENTA)
+            self.close_position_market(f"Range Trailing ({pnl_pct*100:+.2f}%)")
+            return True
+
+        return False
+
+    def _update_tp_for_range_trailing(self):
+        """Обновляет TP для Range trailing режима"""
+        try:
+            # Отменяем старый TP
+            if self.tp_order_id:
+                try:
+                    self.exchange.cancel_order(self.tp_order_id, self.symbol)
+                    self.log(f"🔄 Cancelled old TP for Range Trailing update", Col.GRAY)
+                except:
+                    pass
+
+            # Выставляем новый TP немного выше пика
+            self.place_limit_tp()
+
+        except Exception as e:
+            self.log(f"⚠️ Failed to update TP for Range Trailing: {e}", Col.YELLOW)
+
     def reset_trailing(self):
         """Сброс trailing"""
         self.trailing_active = False
         self.trailing_peak_price = 0.0
+        self.range_trailing_enabled = False
+        self.range_peak_price = 0.0
 
     def wait_for_order_fill(self, order_id, timeout=30):
         """Ожидание исполнения ордера"""
@@ -1195,6 +1308,13 @@ Provide a short, helpful answer (max 200 words). Be specific and actionable if p
             self.place_limit_dca()
             self.place_stop_loss()  # 🆕 Stop Loss
             self.reset_trailing()
+
+            # 🆕 v1.4.2: Активация Range Trailing для Range рынков
+            if not self.is_trending_market:
+                self.range_trailing_enabled = True
+                self.range_peak_price = final_fill_price
+                self.log(f"🎯 Range Trailing ENABLED @ ${final_fill_price:.2f} (откат: 0.05%)", Col.CYAN)
+
             self.update_dashboard(force=True)
 
         except Exception as e:
@@ -1567,9 +1687,13 @@ Provide a short, helpful answer (max 200 words). Be specific and actionable if p
                             last_pnl_log = time.time()
                         except: pass
 
-                    if TRAILING_ENABLED and self.check_trailing_stop(): 
+                    if TRAILING_ENABLED and self.check_trailing_stop():
                         continue
-                    
+
+                    # 🆕 v1.4.2: Проверка Range Trailing
+                    if self.check_range_trailing():
+                        continue
+
                     try:
                         max_loss = self.get_effective_balance() * MAX_ACCOUNT_LOSS_PCT
                         side_mult = 1 if self.position_side == "Buy" else -1
