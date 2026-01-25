@@ -76,10 +76,10 @@ class HybridTradingBot:
         self.trailing_active = False
         self.trailing_peak_price = 0.0
 
-        # 🆕 v1.4.2: Range Trailing (для режима Range)
+        # 🆕 v1.4.2: Range Trailing (для режима Range) - Многоуровневая защита
         self.range_trailing_enabled = False  # Включается для Range позиций
         self.range_peak_price = 0.0
-        self.range_trailing_callback_pct = 0.0005  # 0.05% откат от пика
+        self.last_tp_update_price = 0.0  # Последняя цена при обновлении TP
 
         # Статистика
         self.session_total_pnl = 0.0
@@ -795,7 +795,9 @@ Provide a short, helpful answer (max 200 words). Be specific and actionable if p
             # Trailing status
             if self.range_trailing_enabled:
                 trail_icon = "🎯"
-                callback_pct = self.range_trailing_callback_pct * 100
+                # Динамический порог в зависимости от прибыли
+                current_callback = self.get_range_trailing_callback()
+                callback_pct = current_callback * 100
                 trail_str = f"RANGE @ ${self.range_peak_price:.2f} (-{callback_pct:.2f}%)"
             elif self.trailing_active:
                 trail_icon = "🎯"
@@ -1063,10 +1065,27 @@ Provide a short, helpful answer (max 200 words). Be specific and actionable if p
                 return True
         return False
 
+    def get_range_trailing_callback(self):
+        """
+        🆕 v1.4.2: Определяет порог отката в зависимости от текущей прибыли
+        ВАРИАНТ 3: Многоуровневая защита (агрессивный)
+        """
+        side_mult = 1 if self.position_side == "Buy" else -1
+        pnl_pct = (self.last_price - self.avg_price) / self.avg_price * side_mult
+
+        # Проходим по порогам и находим подходящий
+        for threshold_profit, callback in RANGE_TRAILING_THRESHOLDS:
+            if pnl_pct < threshold_profit:
+                return callback
+
+        # Если вышли за все пороги, используем самый жёсткий
+        return RANGE_TRAILING_THRESHOLDS[-1][1]
+
     def check_range_trailing(self):
         """
-        🆕 v1.4.2: Range Trailing режим
-        Для режима Range: закрывает позицию если откат от пика > 0.05%
+        🆕 v1.4.2: Range Trailing режим - Многоуровневая защита
+        Для режима Range: закрывает позицию при откате от пика
+        Порог отката зависит от уровня прибыли (0.05%-0.10%)
         TP продолжает двигаться вверх по мере роста цены
         """
         if not self.range_trailing_enabled or not self.in_position:
@@ -1075,14 +1094,18 @@ Provide a short, helpful answer (max 200 words). Be specific and actionable if p
         current_price = self.last_price
         side_mult = 1 if self.position_side == "Buy" else -1
 
+        # Получаем текущий динамический порог
+        current_callback_threshold = self.get_range_trailing_callback()
+
         # Обновляем пик цены
         if self.position_side == "Buy":
             if current_price > self.range_peak_price:
                 old_peak = self.range_peak_price
                 self.range_peak_price = current_price
-                self.log(f"📈 Range Peak Updated: ${old_peak:.2f} → ${current_price:.2f}", Col.CYAN)
+                pnl_pct = (current_price - self.avg_price) / self.avg_price * side_mult
+                self.log(f"📈 Range Peak Updated: ${old_peak:.2f} → ${current_price:.2f} (PnL: {pnl_pct*100:+.2f}%, порог: {current_callback_threshold*100:.2f}%)", Col.CYAN)
 
-                # Обновляем TP вверх
+                # Обновляем TP вверх (если изменение значительное)
                 self._update_tp_for_range_trailing()
 
             # Проверяем откат от пика
@@ -1092,26 +1115,37 @@ Provide a short, helpful answer (max 200 words). Be specific and actionable if p
             if current_price < self.range_peak_price or self.range_peak_price == 0:
                 old_peak = self.range_peak_price
                 self.range_peak_price = current_price
-                self.log(f"📉 Range Peak Updated: ${old_peak:.2f} → ${current_price:.2f}", Col.CYAN)
+                pnl_pct = (current_price - self.avg_price) / self.avg_price * side_mult
+                self.log(f"📉 Range Peak Updated: ${old_peak:.2f} → ${current_price:.2f} (PnL: {pnl_pct*100:+.2f}%, порог: {current_callback_threshold*100:.2f}%)", Col.CYAN)
 
-                # Обновляем TP вниз
+                # Обновляем TP вниз (если изменение значительное)
                 self._update_tp_for_range_trailing()
 
             # Проверяем откат от пика
             callback = (current_price - self.range_peak_price) / self.range_peak_price
 
-        # Если откат больше порога - закрываем
-        if callback >= self.range_trailing_callback_pct:
+        # Если откат больше ДИНАМИЧЕСКОГО порога - закрываем
+        if callback >= current_callback_threshold:
             pnl_pct = (current_price - self.avg_price) / self.avg_price * side_mult
-            self.log(f"🔔 RANGE TRAILING STOP! Откат: {callback*100:.3f}%", Col.MAGENTA)
+            self.log(f"🔔 RANGE TRAILING STOP! Откат: {callback*100:.3f}% (порог: {current_callback_threshold*100:.2f}%)", Col.MAGENTA)
             self.close_position_market(f"Range Trailing ({pnl_pct*100:+.2f}%)")
             return True
 
         return False
 
     def _update_tp_for_range_trailing(self):
-        """Обновляет TP для Range trailing режима"""
+        """
+        Обновляет TP для Range trailing режима
+        Обновляет только при значительном изменении пика (>0.1%)
+        """
         try:
+            # Проверяем, достаточно ли изменился пик для обновления TP
+            if self.last_tp_update_price > 0:
+                price_change = abs(self.range_peak_price - self.last_tp_update_price) / self.last_tp_update_price
+                if price_change < RANGE_TRAILING_TP_UPDATE_THRESHOLD:
+                    # Изменение незначительное, не обновляем TP
+                    return
+
             # Отменяем старый TP
             if self.tp_order_id:
                 try:
@@ -1120,8 +1154,12 @@ Provide a short, helpful answer (max 200 words). Be specific and actionable if p
                 except:
                     pass
 
-            # Выставляем новый TP немного выше пика
+            # Выставляем новый TP
             self.place_limit_tp()
+
+            # Сохраняем цену последнего обновления
+            self.last_tp_update_price = self.range_peak_price
+            self.log(f"✅ TP updated for Range Trailing @ peak ${self.range_peak_price:.2f}", Col.GREEN)
 
         except Exception as e:
             self.log(f"⚠️ Failed to update TP for Range Trailing: {e}", Col.YELLOW)
@@ -1132,6 +1170,7 @@ Provide a short, helpful answer (max 200 words). Be specific and actionable if p
         self.trailing_peak_price = 0.0
         self.range_trailing_enabled = False
         self.range_peak_price = 0.0
+        self.last_tp_update_price = 0.0
 
     def wait_for_order_fill(self, order_id, timeout=30):
         """Ожидание исполнения ордера"""
@@ -1313,7 +1352,10 @@ Provide a short, helpful answer (max 200 words). Be specific and actionable if p
             if not self.is_trending_market:
                 self.range_trailing_enabled = True
                 self.range_peak_price = final_fill_price
-                self.log(f"🎯 Range Trailing ENABLED @ ${final_fill_price:.2f} (откат: 0.05%)", Col.CYAN)
+                self.last_tp_update_price = final_fill_price
+                # Показываем многоуровневую защиту
+                thresholds_str = " → ".join([f"{t[1]*100:.2f}%" for t in RANGE_TRAILING_THRESHOLDS])
+                self.log(f"🎯 Range Trailing ENABLED (Многоуровневый: {thresholds_str})", Col.CYAN)
 
             self.update_dashboard(force=True)
 
