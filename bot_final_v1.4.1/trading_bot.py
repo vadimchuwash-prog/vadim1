@@ -801,7 +801,12 @@ Provide a short, helpful answer (max 200 words). Be specific and actionable if p
                 trail_str = f"RANGE @ ${self.range_peak_price:.2f} (-{callback_pct:.2f}%)"
             elif self.trailing_active:
                 trail_icon = "🎯"
-                trail_str = f"ACTIVE @ ${self.trailing_peak_price:.2f}"
+                # Вычисляем текущий порог для Trend trailing
+                tp_dist = self.get_dynamic_tp_steps()
+                vol = self.current_volatility
+                vol_mode = 'high_vol' if vol > 0.004 else ('medium_vol' if vol > 0.0025 else 'low_vol')
+                callback_pct = (tp_dist * TREND_TRAILING_CALLBACK_RATIOS[vol_mode]) * 100
+                trail_str = f"TREND @ ${self.trailing_peak_price:.2f} (-{callback_pct:.2f}%)"
             else:
                 trail_icon = "💤"
                 trail_str = "Waiting..."
@@ -1036,33 +1041,65 @@ Provide a short, helpful answer (max 200 words). Be specific and actionable if p
             self.last_funding_time = datetime.now()
 
     def check_trailing_stop(self):
-        """Trailing stop"""
-        if not TRAILING_ENABLED or not self.in_position: return False
-        current_price = self.last_price 
+        """
+        🆕 v1.4.2: TREND Trailing - Гибридный адаптивный
+        Активация: 50% пути к TP (с коррекцией на волатильность)
+        Откат: 15-25% от расстояния до TP (зависит от волатильности)
+        """
+        if not TRAILING_ENABLED or not self.in_position:
+            return False
+
+        current_price = self.last_price
         side_mult = 1 if self.position_side == "Buy" else -1
         pnl_pct = (current_price - self.avg_price) / self.avg_price * side_mult
-        
+
+        # Получаем динамический TP
+        tp_distance = self.get_dynamic_tp_steps()
+
+        # Определяем режим волатильности
+        vol = self.current_volatility
+        if vol > 0.004:
+            vol_mode = 'high_vol'
+        elif vol > 0.0025:
+            vol_mode = 'medium_vol'
+        else:
+            vol_mode = 'low_vol'
+
+        # Рассчитываем порог активации (50% до TP с коррекцией на волатильность)
+        base_activation = tp_distance * TREND_TRAILING_ACTIVATION_RATIO
+        activation_threshold = base_activation * TREND_TRAILING_ACTIVATION_VOL_ADJUST[vol_mode]
+
+        # Рассчитываем порог отката (% от расстояния до TP)
+        callback_threshold = tp_distance * TREND_TRAILING_CALLBACK_RATIOS[vol_mode]
+
         if not self.trailing_active:
-            if pnl_pct >= TRAILING_ACTIVATION_PCT:
+            if pnl_pct >= activation_threshold:
                 self.trailing_active = True
                 self.trailing_peak_price = current_price
-                self.log(f"🎯 Trailing ACTIVATED @ {current_price:.4f}", Col.CYAN)
+                self.log(f"🎯 Trend Trailing ACTIVATED @ ${current_price:.2f} (PnL: {pnl_pct*100:.2f}%, порог: {activation_threshold*100:.2f}%, откат: {callback_threshold*100:.2f}%)", Col.CYAN)
                 return False
-        
+
         if self.trailing_active:
+            # Обновляем пик
             if self.position_side == "Buy":
-                if current_price > self.trailing_peak_price: 
+                if current_price > self.trailing_peak_price:
+                    old_peak = self.trailing_peak_price
                     self.trailing_peak_price = current_price
+                    self.log(f"📈 Trend Peak Updated: ${old_peak:.2f} → ${current_price:.2f}", Col.CYAN)
                 callback = (self.trailing_peak_price - current_price) / self.trailing_peak_price
             else:
-                if current_price < self.trailing_peak_price: 
+                if current_price < self.trailing_peak_price:
+                    old_peak = self.trailing_peak_price
                     self.trailing_peak_price = current_price
+                    self.log(f"📉 Trend Peak Updated: ${old_peak:.2f} → ${current_price:.2f}", Col.CYAN)
                 callback = (current_price - self.trailing_peak_price) / self.trailing_peak_price
-            
-            if callback >= TRAILING_CALLBACK_PCT:
-                self.log(f"🔔 TRAILING STOP TRIGGERED!", Col.MAGENTA)
-                self.close_position_market(f"Trailing Stop (+{pnl_pct*100:.2f}%)")
+
+            # Проверяем откат
+            if callback >= callback_threshold:
+                self.log(f"🔔 TREND TRAILING STOP! Откат: {callback*100:.3f}% (порог: {callback_threshold*100:.2f}%)", Col.MAGENTA)
+                self.close_position_market(f"Trend Trailing ({pnl_pct*100:+.2f}%)")
                 return True
+
         return False
 
     def get_range_trailing_callback(self):
@@ -1729,12 +1766,15 @@ Provide a short, helpful answer (max 200 words). Be specific and actionable if p
                             last_pnl_log = time.time()
                         except: pass
 
-                    if TRAILING_ENABLED and self.check_trailing_stop():
-                        continue
-
-                    # 🆕 v1.4.2: Проверка Range Trailing
-                    if self.check_range_trailing():
-                        continue
+                    # 🆕 v1.4.2: Умный выбор trailing в зависимости от типа рынка
+                    if self.is_trending_market:
+                        # TREND рынок: используем адаптивный Trend trailing
+                        if TRAILING_ENABLED and self.check_trailing_stop():
+                            continue
+                    else:
+                        # RANGE рынок: используем многоуровневый Range trailing
+                        if self.check_range_trailing():
+                            continue
 
                     try:
                         max_loss = self.get_effective_balance() * MAX_ACCOUNT_LOSS_PCT
