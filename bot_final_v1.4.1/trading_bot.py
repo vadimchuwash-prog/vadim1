@@ -97,7 +97,18 @@ class HybridTradingBot:
         self.current_market_df = None
         self.last_trade_time = None
         self.last_funding_time = None
-        
+
+        # 🆕 v1.4.3: Умная защита DCA (Conditional Protection)
+        self.max_drawdown_from_entry = 0.0       # Максимальная просадка (%)
+        self.max_weighted_drawdown = 0.0         # Взвешенная просадка (с учётом опасности)
+        self.protection_multiplier = 1.0          # Текущий множитель защиты
+        self.last_danger_increase_time = None     # Когда последний раз увеличивалась опасность
+        self.peak_volatility_during_drawdown = 0.0  # Пиковая волатильность при просадке
+        self.lowest_price_since_entry = 0.0       # Минимум для LONG
+        self.highest_price_since_entry = 0.0      # Максимум для SHORT
+        self.price_history = []                   # История цен (последние 10 значений)
+        self.atr_history = []                     # История ATR (последние 10 значений)
+
         # UI
         self.dashboard_msg_id = None
         self.trade_msg_id = None
@@ -1026,9 +1037,225 @@ Provide a short, helpful answer (max 200 words). Be specific and actionable if p
 
     def get_dca_parameters(self):
         """Параметры DCA"""
-        if self.is_trending_market: 
+        if self.is_trending_market:
             return HAMMER_DISTANCES_TREND, HAMMER_WEIGHTS_TREND
         return HAMMER_DISTANCES_RANGE, HAMMER_WEIGHTS_RANGE
+
+    def calculate_danger_level(self):
+        """
+        🆕 v1.4.3: Расчёт уровня опасности для просадки (0.0 - 1.0)
+        Защита активируется только при реальной опасности!
+        """
+        from statistics import mean
+
+        danger_signals = []
+
+        # 1. Скорость падения (за последние 5 минут)
+        if len(self.price_history) >= 5:
+            price_5min_ago = self.price_history[-5]
+            if price_5min_ago > 0:
+                speed_drop = abs((price_5min_ago - self.last_price) / price_5min_ago)
+
+                # Проверяем направление (для LONG - падение, для SHORT - рост)
+                is_adverse_move = False
+                if self.position_side == "Buy" and self.last_price < price_5min_ago:
+                    is_adverse_move = True
+                elif self.position_side == "Sell" and self.last_price > price_5min_ago:
+                    is_adverse_move = True
+
+                if is_adverse_move and speed_drop > PROTECTION_SPEED_DROP_THRESHOLD:
+                    danger_signals.append(min(speed_drop / PROTECTION_SPEED_DROP_THRESHOLD, 1.0))
+
+        # 2. Новые экстремумы (за последние N свечей)
+        if self.current_market_df is not None and len(self.current_market_df) >= PROTECTION_CANDLES_LOOKBACK:
+            recent_data = self.current_market_df.tail(PROTECTION_CANDLES_LOOKBACK)
+
+            if self.position_side == "Buy":
+                recent_low = recent_data['low'].min()
+                if self.last_price <= recent_low * 1.0001:  # Новый минимум (с запасом 0.01%)
+                    danger_signals.append(1.0)
+            else:
+                recent_high = recent_data['high'].max()
+                if self.last_price >= recent_high * 0.9999:  # Новый максимум
+                    danger_signals.append(1.0)
+
+        # 3. Волатильность НЕ падает (риск продолжения движения)
+        if len(self.atr_history) >= 3:
+            avg_atr = mean(self.atr_history[-3:])
+            if self.current_volatility > avg_atr * PROTECTION_ATR_STABLE_RATIO:
+                danger_signals.append(0.5)
+
+        # 4. Серия однонаправленных свечей
+        if self.current_market_df is not None and len(self.current_market_df) >= 5:
+            last_5 = self.current_market_df.tail(5)
+
+            if self.position_side == "Buy":
+                # Считаем красные свечи для LONG
+                red_candles = sum(1 for i in range(len(last_5)) if last_5['close'].iloc[i] < last_5['open'].iloc[i])
+                if red_candles >= PROTECTION_DIRECTIONAL_CANDLES:
+                    danger_signals.append(red_candles / 5.0)
+            else:
+                # Считаем зелёные свечи для SHORT
+                green_candles = sum(1 for i in range(len(last_5)) if last_5['close'].iloc[i] > last_5['open'].iloc[i])
+                if green_candles >= PROTECTION_DIRECTIONAL_CANDLES:
+                    danger_signals.append(green_candles / 5.0)
+
+        # Итоговый уровень опасности
+        if danger_signals:
+            danger_level = sum(danger_signals) / len(danger_signals)
+        else:
+            danger_level = 0.0
+
+        return danger_level
+
+    def check_safety_for_dca_return(self):
+        """
+        🆕 v1.4.3: Проверка безопасности для возврата DCA ближе
+        Требуется минимум PROTECTION_MIN_CHECKS из 5 проверок
+        """
+        checks = {
+            'volatility': False,
+            'time': False,
+            'price_extreme': False,
+            'rsi': False,
+            'recovery': False
+        }
+
+        # 1. Волатильность снизилась?
+        if self.peak_volatility_during_drawdown > 0:
+            checks['volatility'] = self.current_volatility < (self.peak_volatility_during_drawdown * PROTECTION_VOLATILITY_RATIO)
+        else:
+            checks['volatility'] = True
+
+        # 2. Прошло время?
+        if self.last_danger_increase_time:
+            time_elapsed = (datetime.now() - self.last_danger_increase_time).total_seconds()
+            checks['time'] = time_elapsed > PROTECTION_MIN_SAFE_TIME
+        else:
+            checks['time'] = True
+
+        # 3. Цена не делает новых экстремумов?
+        if self.current_market_df is not None and len(self.current_market_df) >= 5:
+            last_5_candles = self.current_market_df.tail(5)
+
+            if self.position_side == "Buy":
+                recent_low = last_5_candles['low'].min()
+                checks['price_extreme'] = self.last_price > recent_low * 1.001
+            else:
+                recent_high = last_5_candles['high'].max()
+                checks['price_extreme'] = self.last_price < recent_high * 0.999
+        else:
+            checks['price_extreme'] = True
+
+        # 4. RSI в безопасной зоне?
+        if self.current_market_df is not None and len(self.current_market_df) > 0:
+            current_rsi = self.current_market_df['RSI'].iloc[-1]
+            checks['rsi'] = 35 < current_rsi < 65
+        else:
+            checks['rsi'] = True
+
+        # 5. Восстановление значительное?
+        if self.position_side == "Buy" and self.lowest_price_since_entry > 0 and self.avg_price > self.lowest_price_since_entry:
+            recovery_ratio = (self.last_price - self.lowest_price_since_entry) / (self.avg_price - self.lowest_price_since_entry)
+            checks['recovery'] = recovery_ratio > PROTECTION_RECOVERY_MIN
+        elif self.position_side == "Sell" and self.highest_price_since_entry > 0 and self.avg_price < self.highest_price_since_entry:
+            recovery_ratio = (self.highest_price_since_entry - self.last_price) / (self.highest_price_since_entry - self.avg_price)
+            checks['recovery'] = recovery_ratio > PROTECTION_RECOVERY_MIN
+        else:
+            checks['recovery'] = True
+
+        # Подсчёт результатов
+        passed_checks = [k for k, v in checks.items() if v]
+        failed_checks = [k for k, v in checks.items() if not v]
+
+        # Требуем минимум PROTECTION_MIN_CHECKS проверок
+        is_safe = len(passed_checks) >= PROTECTION_MIN_CHECKS
+
+        return {
+            'is_safe': is_safe,
+            'checks': checks,
+            'passed': passed_checks,
+            'failed': failed_checks,
+            'score': f"{len(passed_checks)}/5"
+        }
+
+    def update_protection_multiplier(self):
+        """
+        🆕 v1.4.3: Обновление множителя защиты DCA
+        - Быстро увеличивается при ОПАСНОЙ просадке
+        - Медленно снижается при восстановлении (с проверками безопасности)
+        """
+        if not self.in_position or self.avg_price == 0:
+            return
+
+        # Обновляем историю (последние 10 значений)
+        self.price_history.append(self.last_price)
+        if len(self.price_history) > 10:
+            self.price_history.pop(0)
+
+        self.atr_history.append(self.current_volatility)
+        if len(self.atr_history) > 10:
+            self.atr_history.pop(0)
+
+        # Рассчитываем текущую просадку
+        side_mult = 1 if self.position_side == "Buy" else -1
+        unrealized_pct = ((self.last_price - self.avg_price) / self.avg_price) * side_mult * 100
+
+        # Отслеживаем экстремумы
+        if self.position_side == "Buy":
+            if self.lowest_price_since_entry == 0 or self.last_price < self.lowest_price_since_entry:
+                self.lowest_price_since_entry = self.last_price
+        else:
+            if self.highest_price_since_entry == 0 or self.last_price > self.highest_price_since_entry:
+                self.highest_price_since_entry = self.last_price
+
+        # === УВЕЛИЧЕНИЕ ЗАЩИТЫ (при просадке) ===
+        if unrealized_pct < 0:
+            current_drawdown = abs(unrealized_pct)
+
+            # Обновляем максимальную просадку
+            if current_drawdown > self.max_drawdown_from_entry:
+                self.max_drawdown_from_entry = current_drawdown
+
+            # Рассчитываем уровень опасности
+            danger_level = self.calculate_danger_level()
+
+            # ⚠️ КЛЮЧЕВОЕ: Защита активируется ТОЛЬКО при опасности!
+            if danger_level > PROTECTION_DANGER_THRESHOLD:
+                # Взвешенная просадка (чем опаснее, тем сильнее реакция)
+                weighted_drawdown = current_drawdown * danger_level
+
+                # Обновляем максимум взвешенной просадки
+                if weighted_drawdown > self.max_weighted_drawdown:
+                    self.max_weighted_drawdown = weighted_drawdown
+                    self.last_danger_increase_time = datetime.now()
+
+                    # Запоминаем пиковую волатильность
+                    if self.current_volatility > self.peak_volatility_during_drawdown:
+                        self.peak_volatility_during_drawdown = self.current_volatility
+
+                    # Рассчитываем новый множитель
+                    new_multiplier = 1.0 + (weighted_drawdown * PROTECTION_AGGRESSION)
+
+                    if new_multiplier > self.protection_multiplier:
+                        self.protection_multiplier = new_multiplier
+                        self.log(f"🛡️ Protection UP: {self.protection_multiplier:.2f}x (DD: {current_drawdown:.1f}%, danger: {danger_level*100:.0f}%)", Col.YELLOW)
+
+        # === СНИЖЕНИЕ ЗАЩИТЫ (при восстановлении) ===
+        elif self.protection_multiplier > 1.0:
+            safety_checks = self.check_safety_for_dca_return()
+
+            if safety_checks['is_safe']:
+                # Медленное снижение
+                old_mult = self.protection_multiplier
+                self.protection_multiplier = max(1.0, self.protection_multiplier - PROTECTION_DECAY_RATE)
+
+                if self.protection_multiplier < old_mult:
+                    self.log(f"🔓 Protection DOWN: {self.protection_multiplier:.2f}x (checks: {safety_checks['score']})", Col.GREEN)
+            else:
+                # Не безопасно - держим
+                failed = ', '.join(safety_checks['failed'])
+                self.log(f"⏸️ Protection HOLD: {self.protection_multiplier:.2f}x (waiting: {failed})", Col.GRAY)
 
     def process_funding(self):
         """Обработка funding fee"""
@@ -1287,7 +1514,18 @@ Provide a short, helpful answer (max 200 words). Be specific and actionable if p
             
             if not found:
                 self.in_position = False
-                
+
+                # 🆕 v1.4.3: Сброс защиты при отсутствии позиции
+                self.max_drawdown_from_entry = 0.0
+                self.max_weighted_drawdown = 0.0
+                self.protection_multiplier = 1.0
+                self.last_danger_increase_time = None
+                self.peak_volatility_during_drawdown = 0.0
+                self.lowest_price_since_entry = 0.0
+                self.highest_price_since_entry = 0.0
+                self.price_history = []
+                self.atr_history = []
+
         except Exception as e:
             self.log(f"⚠️ Sync error: {e}", Col.YELLOW)
 
@@ -1516,12 +1754,17 @@ Provide a short, helpful answer (max 200 words). Be specific and actionable if p
             if self.safety_count >= SAFETY_ORDERS_COUNT:
                 self._dca_placing = False
                 return False
-            
+
+            # 🆕 v1.4.3: Обновляем умную защиту DCA
+            self.update_protection_multiplier()
+
             dists, weights = self.get_dca_parameters()
             base_dist = dists[self.safety_count]
-            
+
             dist_multiplier = self.get_smart_distance_multiplier(self.safety_count)
-            actual_dist = base_dist * dist_multiplier
+
+            # 🆕 v1.4.3: Применяем защитный множитель ПОВЕРХ всех остальных
+            actual_dist = base_dist * dist_multiplier * self.protection_multiplier
             
             # 🔧 v1.3: ИСПРАВЛЕНО! DCA для SHORT теперь ВЫШЕ входа
             if self.position_side == "Buy":
@@ -1696,7 +1939,18 @@ Provide a short, helpful answer (max 200 words). Be specific and actionable if p
             self.current_trade_fees = 0.0
             self.current_confluence = 0
             self.current_stage = 0
-            
+
+            # 🆕 v1.4.3: Сброс умной защиты DCA при закрытии позиции
+            self.max_drawdown_from_entry = 0.0
+            self.max_weighted_drawdown = 0.0
+            self.protection_multiplier = 1.0
+            self.last_danger_increase_time = None
+            self.peak_volatility_during_drawdown = 0.0
+            self.lowest_price_since_entry = 0.0
+            self.highest_price_since_entry = 0.0
+            self.price_history = []
+            self.atr_history = []
+
             if self.graceful_stop_mode:
                 self.trading_active = False
                 self.graceful_stop_mode = False
