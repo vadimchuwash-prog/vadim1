@@ -81,6 +81,10 @@ class HybridTradingBot:
         self.range_peak_price = 0.0
         self.last_tp_update_price = 0.0  # Последняя цена при обновлении TP
 
+        # 🆕 v1.4.5: Защита от бесконечных попыток закрытия
+        self.close_attempt_count = 0  # Счетчик попыток закрытия
+        self.max_close_attempts = 3  # Максимум попыток перед остановкой
+
         # Статистика
         self.session_total_pnl = 0.0
         self.session_total_fees = 0.0
@@ -1692,6 +1696,9 @@ Provide a short, helpful answer (max 200 words). Be specific and actionable if p
             self.place_stop_loss()  # 🆕 Stop Loss
             self.reset_trailing()
 
+            # 🆕 v1.4.5: Сброс счетчика попыток закрытия при новой позиции
+            self.close_attempt_count = 0
+
             # 🆕 v1.4.2: Активация Range Trailing для Range рынков
             if not self.is_trending_market:
                 self.range_trailing_enabled = True
@@ -2086,15 +2093,39 @@ Provide a short, helpful answer (max 200 words). Be specific and actionable if p
             self.price_history = []
             self.atr_history = []
 
+            # 🆕 v1.4.5: Сброс счетчика попыток после успешного закрытия
+            self.close_attempt_count = 0
+
             if self.graceful_stop_mode:
                 self.trading_active = False
                 self.graceful_stop_mode = False
                 self.tg.send("🛑 Stopped (Graceful)", self.get_keyboard())
-            
+
             self.update_dashboard(force=True)
-            
+
         except Exception as e:
-            self.log(f"❌ CRITICAL CLOSE ERROR: {e}", Col.RED)
+            # 🆕 v1.4.5: КРИТИЧЕСКОЕ ИСПРАВЛЕНИЕ - Защита от бесконечного цикла
+            self.close_attempt_count += 1
+            self.log(f"❌ CRITICAL CLOSE ERROR (Попытка {self.close_attempt_count}/{self.max_close_attempts}): {e}", Col.RED)
+
+            # Если превышен лимит попыток - ОСТАНАВЛИВАЕМ трейлинг, но НЕ останавливаем бота
+            if self.close_attempt_count >= self.max_close_attempts:
+                self.log(f"🚨 ЗАЩИТА АКТИВИРОВАНА: Превышен лимит попыток закрытия! Отключаю трейлинг для этой позиции.", Col.RED)
+                self.log(f"⚠️ Позиция остается открытой. Трейлинг ОТКЛЮЧЕН. TP ордер продолжит работать.", Col.YELLOW)
+
+                # Отключаем трейлинг, чтобы не спамить ошибками
+                self.trailing_active = False
+                self.range_trailing_enabled = False
+
+                # Отправляем уведомление в Telegram
+                try:
+                    self.tg.send(f"🚨 КРИТИЧЕСКАЯ ОШИБКА\n\n"
+                               f"Не удалось закрыть позицию после {self.max_close_attempts} попыток.\n"
+                               f"Ошибка: {e}\n\n"
+                               f"❌ Трейлинг отключен\n"
+                               f"✅ TP ордер продолжит работать\n"
+                               f"⚠️ Рекомендуется проверить позицию вручную")
+                except: pass
 
     def run(self):
         """Главный цикл"""
