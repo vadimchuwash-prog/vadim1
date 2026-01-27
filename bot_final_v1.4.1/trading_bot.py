@@ -102,6 +102,10 @@ class HybridTradingBot:
         self.last_trade_time = None
         self.last_funding_time = None
 
+        # 🆕 v1.4.6: БАГ #1 - Инициализация отсутствующих переменных для CSV
+        self.last_volatility = 0.0
+        self.last_confluence_score = 0
+
         # 🆕 v1.4.3: Умная защита DCA (Conditional Protection)
         self.max_drawdown_from_entry = 0.0       # Максимальная просадка (%)
         self.max_weighted_drawdown = 0.0         # Взвешенная просадка (с учётом опасности)
@@ -364,14 +368,16 @@ class HybridTradingBot:
             score += 1
         
         # Фактор 4: Объём выше среднего
-        volume_ratio = row['volume'] / df['volume'].iloc[-20:].mean()
+        # 🆕 v1.4.6: БАГ #15 - Защита от деления на ноль
+        mean_volume = df['volume'].iloc[-20:].mean()
+        volume_ratio = row['volume'] / mean_volume if mean_volume > 0 else 1.0
         if volume_ratio > 1.2:
             score += 1
-        
+
         # Фактор 5: Сильный RSI
         if abs(row['RSI'] - 50) < 10:
             score += 1
-        
+
         # Фактор 6: Высокий объём
         if volume_ratio > 1.5:
             score += 1
@@ -424,7 +430,9 @@ class HybridTradingBot:
             return None
         
         # 5. Фильтр объёма
-        volume_ratio = row['volume'] / df['volume'].iloc[-20:].mean()
+        # 🆕 v1.4.6: БАГ #15 (2-е место) - Защита от деления на ноль
+        mean_volume = df['volume'].iloc[-20:].mean()
+        volume_ratio = row['volume'] / mean_volume if mean_volume > 0 else 1.0
         if volume_ratio < MIN_VOLUME_RATIO:
             return None
         
@@ -444,9 +452,13 @@ class HybridTradingBot:
                 return None
         
         # 7. Защита от ножа
-        price_change_3 = (row['close'] - df.iloc[-4]['close']) / df.iloc[-4]['close']
-        if abs(price_change_3) > KNIFE_PROTECTION_PCT:
-            return None
+        # 🆕 v1.4.6: БАГ #13 - Защита от деления на ноль
+        prev_close = df.iloc[-4]['close']
+        if prev_close > 0:
+            price_change_3 = (row['close'] - prev_close) / prev_close
+            if abs(price_change_3) > KNIFE_PROTECTION_PCT:
+                return None
+        # Если prev_close == 0, пропускаем проверку (данные некорректны)
         
         # 8. Confluence scoring
         confluence = self.calculate_confluence_score(df)
@@ -828,14 +840,16 @@ Provide a short, helpful answer (max 200 words). Be specific and actionable if p
             # TP дистанция
             tp_distance = float(self.get_dynamic_tp_steps())
             target_tp = self.avg_price * (1 + (tp_distance * side_mult))
-            dist_tp_pct = abs((target_tp - self.last_price) / self.last_price * 100)
-            
+            # 🆕 v1.4.6: БАГ #2 - Защита от деления на ноль
+            dist_tp_pct = abs((target_tp - self.last_price) / self.last_price * 100) if self.last_price != 0 else 0.0
+
             # DCA дистанция
             if self.safety_count < SAFETY_ORDERS_COUNT:
                 dists, _ = self.get_dca_parameters()
                 mult = self.get_smart_distance_multiplier(self.safety_count)
                 target_dca = self.base_entry_price * (1 + ((dists[self.safety_count] * mult) * (-side_mult)))
-                dist_dca_pct = abs((self.last_price - target_dca) / self.last_price * 100)
+                # 🆕 v1.4.6: БАГ #3 - Защита от деления на ноль
+                dist_dca_pct = abs((self.last_price - target_dca) / self.last_price * 100) if self.last_price != 0 else 0.0
                 dca_str = f"{dist_dca_pct:.2f}%"
             else:
                 dca_str = "MAX"
@@ -1100,8 +1114,12 @@ Provide a short, helpful answer (max 200 words). Be specific and actionable if p
                 elif self.position_side == "Sell" and self.last_price > price_5min_ago:
                     is_adverse_move = True
 
+                # 🆕 v1.4.6: БАГ #17 - Защита от деления на ноль (если константа == 0)
                 if is_adverse_move and speed_drop > PROTECTION_SPEED_DROP_THRESHOLD:
-                    danger_signals.append(min(speed_drop / PROTECTION_SPEED_DROP_THRESHOLD, 1.0))
+                    if PROTECTION_SPEED_DROP_THRESHOLD > 0:
+                        danger_signals.append(min(speed_drop / PROTECTION_SPEED_DROP_THRESHOLD, 1.0))
+                    else:
+                        danger_signals.append(1.0)  # Максимальная опасность если порог 0
 
         # 2. Новые экстремумы (за последние N свечей)
         if self.current_market_df is not None and len(self.current_market_df) >= PROTECTION_CANDLES_LOOKBACK:
@@ -1192,12 +1210,21 @@ Provide a short, helpful answer (max 200 words). Be specific and actionable if p
             checks['rsi'] = True
 
         # 5. Восстановление значительное?
+        # 🆕 v1.4.6: БАГ #8, #9 - Защита от деления на ноль
         if self.position_side == "Buy" and self.lowest_price_since_entry > 0 and self.avg_price > self.lowest_price_since_entry:
-            recovery_ratio = (self.last_price - self.lowest_price_since_entry) / (self.avg_price - self.lowest_price_since_entry)
-            checks['recovery'] = recovery_ratio > PROTECTION_RECOVERY_MIN
+            denominator = self.avg_price - self.lowest_price_since_entry
+            if denominator > 0:
+                recovery_ratio = (self.last_price - self.lowest_price_since_entry) / denominator
+                checks['recovery'] = recovery_ratio > PROTECTION_RECOVERY_MIN
+            else:
+                checks['recovery'] = True  # Если знаменатель 0, считаем безопасным
         elif self.position_side == "Sell" and self.highest_price_since_entry > 0 and self.avg_price < self.highest_price_since_entry:
-            recovery_ratio = (self.highest_price_since_entry - self.last_price) / (self.highest_price_since_entry - self.avg_price)
-            checks['recovery'] = recovery_ratio > PROTECTION_RECOVERY_MIN
+            denominator = self.highest_price_since_entry - self.avg_price
+            if denominator > 0:
+                recovery_ratio = (self.highest_price_since_entry - self.last_price) / denominator
+                checks['recovery'] = recovery_ratio > PROTECTION_RECOVERY_MIN
+            else:
+                checks['recovery'] = True  # Если знаменатель 0, считаем безопасным
         else:
             checks['recovery'] = True
 
@@ -1236,6 +1263,9 @@ Provide a short, helpful answer (max 200 words). Be specific and actionable if p
 
         # Рассчитываем текущую просадку
         side_mult = 1 if self.position_side == "Buy" else -1
+        # 🆕 v1.4.6: БАГ #4 - Защита от деления на ноль
+        if self.avg_price == 0:
+            return  # Выходим, если нет валидной цены входа
         unrealized_pct = ((self.last_price - self.avg_price) / self.avg_price) * side_mult * 100
 
         # Отслеживаем экстремумы
@@ -1313,6 +1343,10 @@ Provide a short, helpful answer (max 200 words). Be specific and actionable if p
         if not TRAILING_ENABLED or not self.in_position:
             return False
 
+        # 🆕 v1.4.6: БАГ #5 - Защита от деления на ноль
+        if self.avg_price == 0:
+            return False
+
         current_price = self.last_price
         side_mult = 1 if self.position_side == "Buy" else -1
         pnl_pct = (current_price - self.avg_price) / self.avg_price * side_mult
@@ -1344,6 +1378,12 @@ Provide a short, helpful answer (max 200 words). Be specific and actionable if p
                 return False
 
         if self.trailing_active:
+            # 🆕 v1.4.6: БАГ #6, #7 - Защита от деления на ноль в trailing_peak_price
+            if self.trailing_peak_price == 0:
+                self.log(f"⚠️ Trailing peak price is 0, resetting trailing", Col.YELLOW)
+                self.trailing_active = False
+                return False
+
             # Обновляем пик
             if self.position_side == "Buy":
                 if current_price > self.trailing_peak_price:
@@ -1398,6 +1438,12 @@ Provide a short, helpful answer (max 200 words). Be specific and actionable if p
         # Получаем текущий динамический порог
         current_callback_threshold = self.get_range_trailing_callback()
 
+        # 🆕 v1.4.6: БАГ #10, #11 - Защита от деления на ноль в range_peak_price
+        if self.range_peak_price == 0:
+            # Инициализируем пик текущей ценой при первом запуске
+            self.range_peak_price = current_price
+            self.log(f"🎯 Range Peak Initialized @ ${current_price:.2f}", Col.CYAN)
+
         # Обновляем пик цены
         if self.position_side == "Buy":
             if current_price > self.range_peak_price:
@@ -1413,7 +1459,7 @@ Provide a short, helpful answer (max 200 words). Be specific and actionable if p
             callback = (self.range_peak_price - current_price) / self.range_peak_price
 
         else:  # SHORT
-            if current_price < self.range_peak_price or self.range_peak_price == 0:
+            if current_price < self.range_peak_price:
                 old_peak = self.range_peak_price
                 self.range_peak_price = current_price
                 pnl_pct = (current_price - self.avg_price) / self.avg_price * side_mult
@@ -1440,9 +1486,13 @@ Provide a short, helpful answer (max 200 words). Be specific and actionable if p
         Обновляет только при значительном изменении пика (>0.1%)
         """
         try:
+            # 🆕 v1.4.6: БАГ #12 - Защита от деления на ноль
             # Проверяем, достаточно ли изменился пик для обновления TP
             if self.last_tp_update_price > 0:
                 price_change = abs(self.range_peak_price - self.last_tp_update_price) / self.last_tp_update_price
+            else:
+                # Если это первое обновление, считаем изменение значительным
+                price_change = RANGE_TRAILING_TP_UPDATE_THRESHOLD + 0.01
                 if price_change < RANGE_TRAILING_TP_UPDATE_THRESHOLD:
                     # Изменение незначительное, не обновляем TP
                     return
@@ -1576,7 +1626,8 @@ Provide a short, helpful answer (max 200 words). Be specific and actionable if p
                             cumulative = self.entry_usd_vol
                             for i, w in enumerate(weights):
                                 cumulative += self.entry_usd_vol * w
-                                if abs(position_usd - cumulative) / cumulative < 0.15:
+                                # 🆕 v1.4.6: БАГ #16 - Защита от деления на ноль
+                                if cumulative > 0 and abs(position_usd - cumulative) / cumulative < 0.15:
                                     self.safety_count = i + 1
                                     self.log(f"🔄 Restored DCA level: {self.safety_count}", Col.CYAN)
                                     break
@@ -2274,8 +2325,9 @@ Provide a short, helpful answer (max 200 words). Be specific and actionable if p
                                             fill_price,
                                             self.safety_count,
                                             "LIMIT",
-                                            self.last_volatility,
-                                            self.last_confluence_score
+                                            # 🆕 v1.4.6: БАГ #1, #22 - Используем актуальные значения
+                                            self.current_volatility,
+                                            self.current_confluence
                                         ])
                                 except: pass
 
