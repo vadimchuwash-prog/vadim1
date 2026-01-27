@@ -1,5 +1,5 @@
 """
-🤖 BOT MODULES PACKAGE v1.4.5
+🤖 BOT MODULES PACKAGE v1.4.6
 Модульная структура торгового бота
 
 Модули:
@@ -9,6 +9,7 @@
 - bot_indicators: Индикаторы и технический анализ
 - bot_trailing: Трейлинг стопы (Trend + Range)
 - bot_protection: Умная защита DCA v1.4.3
+- bot_monitoring: Мониторинг, Telegram, AI чат (НОВЫЙ!)
 - bot_main: Главный класс (объединяет все миксины)
 
 Утилиты:
@@ -23,11 +24,12 @@ from .bot_orders import BotOrdersMixin
 from .bot_indicators import BotIndicatorsMixin
 from .bot_trailing import BotTrailingMixin
 from .bot_protection import BotProtectionMixin
+from .bot_monitoring import BotMonitoringMixin
 
 # Главный класс с модульной архитектурой
 from .bot_main import HybridTradingBotModular, TradingBot
 
-__version__ = "1.4.5"
+__version__ = "1.4.6"
 __all__ = [
     'HybridTradingBot',
     'BotPositionsMixin',
@@ -35,6 +37,7 @@ __all__ = [
     'BotIndicatorsMixin',
     'BotTrailingMixin',
     'BotProtectionMixin',
+    'BotMonitoringMixin',
     'HybridTradingBotModular',
     'TradingBot'
 ]

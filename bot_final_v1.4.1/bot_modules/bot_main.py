@@ -13,18 +13,8 @@ from bot_modules.bot_indicators import BotIndicatorsMixin
 from bot_modules.bot_positions import BotPositionsMixin
 from bot_modules.bot_trailing import BotTrailingMixin
 from bot_modules.bot_protection import BotProtectionMixin
-
-try:
-    from bot_modules.bot_orders import BotOrdersMixin
-except ImportError:
-    print("⚠️ bot_orders.py не найден, используем заглушку")
-    class BotOrdersMixin: pass
-
-try:
-    from bot_modules.bot_monitoring import BotMonitoringMixin
-except ImportError:
-    print("⚠️ bot_monitoring.py не найден, методы мониторинга будут из bot_core")
-    class BotMonitoringMixin: pass
+from bot_modules.bot_orders import BotOrdersMixin
+from bot_modules.bot_monitoring import BotMonitoringMixin
 
 
 class HybridTradingBotModular(
