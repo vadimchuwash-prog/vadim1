@@ -163,12 +163,14 @@ class HybridTradingBot:
             return
 
         try:
-            # Расчётный PnL (с учётом комиссий)
+            # 🆕 КРИТИЧЕСКОЕ ИСПРАВЛЕНИЕ БАГ #8: Биржа возвращает unrealizedPnl УЖЕ с учётом комиссий!
+            # Не нужно вычитать комиссии дважды!
             side_mult = 1 if self.position_side == "Buy" else -1
             gross_pnl = (self.last_price - self.avg_price) * self.total_size_coins * side_mult
-            calc_pnl = gross_pnl - self.current_trade_fees  # Вычитаем комиссии
+            # calc_pnl = gross_pnl - self.current_trade_fees  # ❌ БЫЛО: Вычитали комиссии дважды!
+            calc_pnl = gross_pnl  # ✅ Сравниваем gross PnL с exchange (который уже чистый)
 
-            # PnL от биржи
+            # PnL от биржи (уже включает комиссии)
             positions = self.exchange.fetch_positions([self.symbol])
             for pos in positions:
                 amt = float(pos.get('contracts', 0) or pos['info'].get('positionAmt', 0))
@@ -1747,15 +1749,32 @@ Provide a short, helpful answer (max 200 words). Be specific and actionable if p
 
     def place_limit_tp(self):
         """Размещение TP - ИСПРАВЛЕНО v1.4.1"""
+        # 🆕 КРИТИЧЕСКОЕ ИСПРАВЛЕНИЕ БАГ #10: Проверка позиции ПЕРЕД размещением TP!
+        if not self.in_position:
+            return False
+
+        # 🆕 Синхронизация с биржей - проверяем что позиция РЕАЛЬНО существует!
+        try:
+            self._sync_position_with_exchange()
+        except Exception as e:
+            self.log(f"⚠️ TP: sync failed: {e}", Col.YELLOW)
+            return False
+
+        # 🆕 После синхронизации проверяем что позиция НЕ закрыта вручную
+        if not self.in_position or self.total_size_coins == 0:
+            self.log("🚨 Cannot place TP: position closed externally!", Col.RED)
+            self.reset_position()
+            return False
+
         # Отменяем старый TP если есть
         if self.tp_order_id:
-            try: 
+            try:
                 self.exchange.cancel_order(self.tp_order_id, self.symbol)
                 self.log(f"🗑️ Cancelled old TP order {self.tp_order_id}", Col.GRAY)
             except Exception as e:
                 self.log(f"⚠️ TP cancel error: {e}", Col.YELLOW)
             self.tp_order_id = None
-        
+
         if self.total_size_coins <= 0:
             self.log("⚠️ TP: total_size_coins <= 0", Col.YELLOW)
             return False
@@ -1931,14 +1950,18 @@ Provide a short, helpful answer (max 200 words). Be specific and actionable if p
         """Исполнение DCA (из ultrabtc7 - БЕЗ ИЗМЕНЕНИЙ!)"""
         try:
             self.safety_count += 1
-            
+
             prev_total = self.total_size_coins
             self.total_size_coins += fill_amount
             self.avg_price = ((self.avg_price * prev_total) + (fill_price * fill_amount)) / self.total_size_coins
-            
+
+            # 🆕 КРИТИЧЕСКОЕ ИСПРАВЛЕНИЕ БАГ #9: Обновляем base_entry_price после DCA!
+            # Следующие DCA должны рассчитываться от НОВОЙ средней цены, а не от первоначальной!
+            self.base_entry_price = self.avg_price
+
             dca_fee = self.get_real_order_fee(order_id) or ((fill_amount * fill_price) * MAKER_FEE)
             self.current_trade_fees += dca_fee
-            
+
             self.dca_order_id = None
             
             self.log(f"🔨 DCA{self.safety_count} EXECUTED @ {fill_price:.4f}", Col.MAGENTA)
@@ -2163,9 +2186,25 @@ Provide a short, helpful answer (max 200 words). Be specific and actionable if p
                                  if check['status'] == 'closed':
                                      self.execute_dca(float(check['average']), float(check['amount']), self.dca_order_id)
                                  elif check['status'] in ['canceled', 'rejected', 'expired']:
-                                     self.log("⚠️ DCA Order Canceled! Resetting...", Col.RED)
+                                     self.log("⚠️ DCA Order Canceled! Checking position...", Col.RED)
                                      self.dca_order_id = None
-                                     self.place_limit_dca()
+
+                                     # 🆕 КРИТИЧЕСКОЕ ИСПРАВЛЕНИЕ БАГ #11: Проверяем позицию ПЕРЕД заменой DCA!
+                                     try:
+                                         self._sync_position_with_exchange()
+
+                                         # Если позиция закрыта внешне - сбрасываем состояние
+                                         if not self.in_position or self.total_size_coins == 0:
+                                             self.log("🚨 DCA canceled because position closed externally!", Col.RED)
+                                             self.reset_position()
+                                         else:
+                                             # Позиция существует - можно заменить DCA
+                                             self.log("✅ Position exists, replacing DCA...", Col.YELLOW)
+                                             self.place_limit_dca()
+                                     except Exception as e:
+                                         self.log(f"⚠️ DCA canceled handler error: {e}", Col.YELLOW)
+                                         # При ошибке синхронизации всё равно пробуем сбросить
+                                         self.reset_position()
 
                         if self.tp_order_id and str(self.tp_order_id) not in oids:  # 🆕 v1.4.1: Сравнение строк
                             check = self.exchange.fetch_order(self.tp_order_id, self.symbol)
