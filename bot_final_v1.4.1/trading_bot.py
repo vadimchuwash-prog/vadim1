@@ -276,6 +276,28 @@ class HybridTradingBot:
     def get_effective_balance(self):
         return self.balance * ALLOWED_CAPITAL_PCT
 
+    def get_current_pnl(self):
+        """
+        🆕 КРИТИЧЕСКОЕ ИСПРАВЛЕНИЕ: Получить РЕАЛЬНЫЙ PnL с биржи
+        НЕ рассчитывать вручную - брать напрямую от exchange!
+        """
+        if not self.in_position or self.total_size_coins == 0:
+            return 0.0
+
+        try:
+            positions = self.exchange.fetch_positions([self.symbol])
+            for pos in positions:
+                amt = float(pos.get('contracts', 0) or pos['info'].get('positionAmt', 0))
+                if abs(amt) > 0.0001:
+                    # Возвращаем unrealized PnL напрямую с биржи
+                    return float(pos.get('unrealizedPnl', 0))
+            return 0.0
+        except Exception as e:
+            self.log(f"⚠️ get_current_pnl error: {e}", Col.YELLOW)
+            # Fallback на расчёт (но это может быть неточно!)
+            side_mult = 1 if self.position_side == "Buy" else -1
+            return (self.last_price - self.avg_price) * self.total_size_coins * side_mult
+
     def get_market_data_enhanced(self):
         """Получение рыночных данных с индикаторами"""
         try:
@@ -613,9 +635,18 @@ Provide a short, helpful answer (max 200 words). Be specific and actionable if p
     def perform_health_check(self):
         """🆕 v1.2.1 - АГРЕССИВНАЯ проверка здоровья позиции"""
         try:
-            if not self.in_position: 
+            if not self.in_position:
                 return
-            
+
+            # 🆕 КРИТИЧЕСКОЕ ИСПРАВЛЕНИЕ БАГ #6: Сначала синхронизация с биржей!
+            self._sync_position_with_exchange()
+
+            # Проверяем что позиция ЕЩЁ существует на бирже
+            if not self.in_position or self.total_size_coins == 0:
+                self.log("🚨 Doctor: Position closed externally!", Col.RED)
+                self.reset_position()
+                return
+
             # 1. Проверяем наличие TP ордера
             if not self.tp_order_id:
                 self.log("🚑 Doctor: No TP order! Placing...", Col.YELLOW)
@@ -1436,6 +1467,42 @@ Provide a short, helpful answer (max 200 words). Be specific and actionable if p
         self.range_peak_price = 0.0
         self.last_tp_update_price = 0.0
 
+    def reset_position(self):
+        """
+        🆕 КРИТИЧЕСКОЕ ИСПРАВЛЕНИЕ БАГ #4: Сброс состояния после закрытия позиции
+        Этот метод вызывался но НЕ СУЩЕСТВОВАЛ!
+        """
+        self.in_position = False
+        self.position_side = None
+        self.avg_price = 0.0
+        self.total_size_coins = 0.0
+        self.safety_count = 0
+        self.entry_usd_vol = 0.0
+        self.base_entry_price = 0.0
+        self.first_entry_price = 0.0
+        self.current_trade_fees = 0.0
+
+        # Сброс защиты DCA
+        self.max_drawdown_from_entry = 0.0
+        self.max_weighted_drawdown = 0.0
+        self.protection_multiplier = 1.0
+        self.last_danger_increase_time = None
+        self.peak_volatility_during_drawdown = 0.0
+        self.lowest_price_since_entry = 0.0
+        self.highest_price_since_entry = 0.0
+        self.price_history = []
+        self.atr_history = []
+
+        # Сброс trailing
+        self.reset_trailing()
+
+        # Сброс ордеров
+        self.tp_order_id = None
+        self.sl_order_id = None
+        self.dca_order_id = None
+
+        self.log("✅ Position state reset", Col.GREEN)
+
     def wait_for_order_fill(self, order_id, timeout=30):
         """Ожидание исполнения ордера"""
         start_time = time.time()
@@ -1658,6 +1725,7 @@ Provide a short, helpful answer (max 200 words). Be specific and actionable if p
             amount = float(self.exchange.amount_to_precision(self.symbol, self.total_size_coins))
             
             # Стоп-маркет ордер
+            # 🆕 КРИТИЧЕСКОЕ ИСПРАВЛЕНИЕ БАГ #5: Убрали reduceOnly для BingX Hedge режима!
             order = self.exchange.create_order(
                 symbol=self.symbol,
                 type='stop_market',
@@ -1665,8 +1733,7 @@ Provide a short, helpful answer (max 200 words). Be specific and actionable if p
                 amount=amount,
                 params={
                     'stopPrice': price,
-                    'positionSide': 'LONG' if self.position_side == 'Buy' else 'SHORT',
-                    'reduceOnly': True
+                    'positionSide': 'LONG' if self.position_side == 'Buy' else 'SHORT'
                 }
             )
             
@@ -1739,9 +1806,53 @@ Provide a short, helpful answer (max 200 words). Be specific and actionable if p
         # Защита от множественных вызовов
         if hasattr(self, '_dca_placing') and self._dca_placing:
             return False
-        
+
         self._dca_placing = True
-        
+
+        # 🆕 КРИТИЧЕСКОЕ ИСПРАВЛЕНИЕ БАГ #7: Проверка позиции ПЕРЕД размещением DCA!
+        if not self.in_position:
+            self._dca_placing = False
+            return False
+
+        # 🆕 Синхронизация с биржей - проверяем что позиция РЕАЛЬНО существует!
+        try:
+            self._sync_position_with_exchange()
+        except Exception as e:
+            self.log(f"⚠️ DCA: sync failed: {e}", Col.YELLOW)
+            self._dca_placing = False
+            return False
+
+        # 🆕 После синхронизации проверяем что позиция НЕ закрыта вручную
+        if not self.in_position or self.total_size_coins == 0:
+            self.log("🚨 Cannot place DCA: position closed externally!", Col.RED)
+            self.reset_position()
+            self._dca_placing = False
+            return False
+
+        # 🆕 КРИТИЧНО! Проверяем свободную маржу на бирже
+        try:
+            balance_info = self.exchange.fetch_balance({'type': 'swap'})
+            free_margin = float(balance_info['USDT']['free'])
+
+            # Рассчитываем нужную маржу для следующей DCA
+            dists, weights = self.get_dca_parameters()
+            if self.safety_count >= len(weights):
+                self._dca_placing = False
+                return False
+
+            weight = weights[self.safety_count]
+            dca_vol_usd = self.entry_usd_vol * weight
+            required_margin = dca_vol_usd * 1.2  # 20% буфер безопасности
+
+            if free_margin < required_margin:
+                self.log(f"🚨 Insufficient margin for DCA{self.safety_count+1}!", Col.RED)
+                self.log(f"   Need: {required_margin:.2f}$ | Available: {free_margin:.2f}$", Col.YELLOW)
+                self.log(f"⚠️ Position may be approaching liquidation!", Col.YELLOW)
+                self._dca_placing = False
+                return False
+        except Exception as e:
+            self.log(f"⚠️ Margin check failed: {e}", Col.YELLOW)
+
         try:
             if self.dca_order_id:
                 try: 
@@ -1863,13 +1974,14 @@ Provide a short, helpful answer (max 200 words). Be specific and actionable if p
             
             side_to_close = "sell" if self.position_side == "Buy" else "buy"
             amount = float(self.exchange.amount_to_precision(self.symbol, real_amount))
-            
-            params = {'reduceOnly': True, 'positionSide': 'LONG' if self.position_side == 'Buy' else 'SHORT'}
+
+            # 🆕 КРИТИЧЕСКОЕ ИСПРАВЛЕНИЕ БАГ #5: Убрали reduceOnly для BingX Hedge режима!
+            params = {'positionSide': 'LONG' if self.position_side == 'Buy' else 'SHORT'}
             order = self.exchange.create_order(
-                symbol=self.symbol, 
-                type='market', 
-                side=side_to_close, 
-                amount=amount, 
+                symbol=self.symbol,
+                type='market',
+                side=side_to_close,
+                amount=amount,
                 params=params
             )
             time.sleep(1) 
@@ -2031,11 +2143,12 @@ Provide a short, helpful answer (max 200 words). Be specific and actionable if p
                             continue
 
                     try:
+                        # 🆕 КРИТИЧЕСКОЕ ИСПРАВЛЕНИЕ БАГ #3: Используем РЕАЛЬНЫЙ PnL с биржи!
                         max_loss = self.get_effective_balance() * MAX_ACCOUNT_LOSS_PCT
-                        side_mult = 1 if self.position_side == "Buy" else -1
-                        u_pnl = (self.last_price - self.avg_price) * self.total_size_coins * side_mult
-                        
+                        u_pnl = self.get_current_pnl()  # БЕРЁМ С БИРЖИ, а не считаем вручную!
+
                         if u_pnl <= -max_loss:
+                            self.log(f"🚨 STOP LOSS TRIGGERED! PnL: {u_pnl:.2f}$ / Max: -{max_loss:.2f}$", Col.RED)
                             self.close_position_market(f"STOP LOSS -{MAX_ACCOUNT_LOSS_PCT*100}%")
                             continue
                     except: pass
@@ -2107,9 +2220,25 @@ Provide a short, helpful answer (max 200 words). Be specific and actionable if p
                                 self.tg.send(tg_msg)
 
                             elif check['status'] in ['canceled', 'rejected', 'expired']:
-                                self.log("⚠️ TP Order Canceled! Resetting...", Col.RED)
+                                self.log("⚠️ TP Order Canceled! Checking position...", Col.RED)
                                 self.tp_order_id = None
-                                self.place_limit_tp()
+
+                                # 🆕 КРИТИЧЕСКОЕ ИСПРАВЛЕНИЕ БАГ #1: Проверяем позицию ПЕРЕД заменой TP!
+                                try:
+                                    self._sync_position_with_exchange()
+
+                                    # Если позиция закрыта внешне - сбрасываем состояние
+                                    if not self.in_position or self.total_size_coins == 0:
+                                        self.log("🚨 TP canceled because position closed externally!", Col.RED)
+                                        self.reset_position()
+                                    else:
+                                        # Позиция существует - можно заменить TP
+                                        self.log("✅ Position exists, replacing TP...", Col.YELLOW)
+                                        self.place_limit_tp()
+                                except Exception as e:
+                                    self.log(f"⚠️ TP canceled handler error: {e}", Col.YELLOW)
+                                    # При ошибке синхронизации всё равно пробуем сбросить
+                                    self.reset_position()
 
                     except Exception as e:
                         self.log(f"⚠️ Order check error: {e}", Col.YELLOW)
