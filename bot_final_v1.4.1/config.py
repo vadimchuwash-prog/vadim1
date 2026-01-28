@@ -24,9 +24,10 @@
 import os
 
 # 🔑 API KEYS
-AI_GEMINI_KEY = os.getenv("GEMINI_API_KEY", "AIzaSyDHrTaNZo8pR55GNmYLASC3yKtx-Y1HRcU")
+# 🔧 v1.4.7: Убран захардкоженный ключ - используйте переменную окружения GEMINI_API_KEY
+AI_GEMINI_KEY = os.getenv("GEMINI_API_KEY", "")
 AI_MODEL_NAME = "gemini-1.5-flash"  # Стабильная модель для вашего API ключа
-TG_BOT_TOKEN = ""
+TG_BOT_TOKEN = os.getenv("TG_BOT_TOKEN", "")  # Используйте переменную окружения
 
 HAS_AI = True
 

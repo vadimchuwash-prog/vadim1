@@ -1,5 +1,5 @@
 """
-🤖 HYBRID TRADING BOT v1.4.6 - MONITORING MODULE
+🤖 HYBRID TRADING BOT v1.4.7 - MONITORING MODULE
 Модуль мониторинга, управления и AI функций
 
 Функции:
@@ -202,7 +202,7 @@ class BotMonitoringMixin:
 
         # Начало дашборда
         dash = f"""╔══════════════════════════════
-║ 🚀 <b>HYBRID BOT v1.4.6</b> {status_icon} {status_text}
+║ 🚀 <b>HYBRID BOT v1.4.7</b> {status_icon} {status_text}
 ╠══════════════════════════════
 ║
 ║ 💰 <b>БАЛАНС</b>
@@ -420,11 +420,11 @@ class BotMonitoringMixin:
                     self.tg.edit_message(msg_id, bal_msg, self.get_keyboard())
 
                 elif data == "refresh":
-                    self.tg.answer_callback(callback_id, "🔄 Обновляю...")
+                    # 🔧 v1.4.7: Убрали дублирующий answer_callback (уже вызван выше на строке 388)
                     self.update_dashboard(force=True)
 
                 elif data == "ai_report":
-                    self.tg.answer_callback(callback_id, "🤖 Генерирую отчёт...")
+                    # 🔧 v1.4.7: Убрали дублирующий answer_callback (уже вызван выше на строке 388)
                     self.trigger_ai_report_thread(manual=True)
 
             # 🆕 Обработка текстовых сообщений (AI чат)

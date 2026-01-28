@@ -1,6 +1,12 @@
 """
-🤖 HYBRID TRADING BOT v1.4.6 - MAIN CLASS
+🤖 HYBRID TRADING BOT v1.4.7 - MAIN CLASS
 Главный класс бота с модульной архитектурой
+
+КРИТИЧЕСКИЕ ИСПРАВЛЕНИЯ v1.4.7:
+- 🔥 Добавлен мониторинг SL ордера в run() (БАГ - SL мог сработать незаметно!)
+- 🔧 Убран дублирующий answer_callback в Telegram
+- 🔒 Убран захардкоженный API ключ из config.py
+- 📦 Добавлен экспорт AnalyticsMixin
 
 КРИТИЧЕСКИЕ ИСПРАВЛЕНИЯ v1.4.6:
 - 🔥 Добавлен метод run() - главный торговый цикл (БЫЛ УТЕРЯН при модуляризации!)
@@ -40,7 +46,7 @@ class HybridTradingBotModular(
     HybridTradingBot
 ):
     """
-    🤖 Модульный торговый бот v1.4.6
+    🤖 Модульный торговый бот v1.4.7
 
     Наследует миксины в порядке приоритета:
     1. BotIndicatorsMixin - индикаторы и анализ
@@ -266,6 +272,87 @@ class HybridTradingBotModular(
                                 except Exception as e:
                                     self.log(f"⚠️ TP canceled handler error: {e}", Col.YELLOW)
                                     self.reset_position()
+
+                        # 🆕 v1.4.7: Проверка SL ордера (КРИТИЧЕСКОЕ ИСПРАВЛЕНИЕ!)
+                        if self.sl_order_id and str(self.sl_order_id) not in oids:
+                            check = self.exchange.fetch_order(self.sl_order_id, self.symbol)
+                            if check['status'] == 'closed':
+                                self.log("🛡️ STOP LOSS Executed!", Col.RED)
+                                try:
+                                    self.exchange.cancel_order(self.tp_order_id, self.symbol)
+                                except:
+                                    pass
+                                try:
+                                    self.exchange.cancel_order(self.dca_order_id, self.symbol)
+                                except:
+                                    pass
+
+                                fill_price = float(check['average'])
+                                sl_fee = self.get_real_order_fee(self.sl_order_id) or (self.total_size_coins * fill_price * MAKER_FEE)
+                                self.current_trade_fees += sl_fee
+
+                                side_mult = 1 if self.position_side == "Buy" else -1
+                                net = ((fill_price - self.avg_price) * self.total_size_coins * side_mult) - self.current_trade_fees
+                                self.balance += net
+                                self.in_position = False
+
+                                self.last_trade_time = datetime.now()
+
+                                self.session_total_pnl += net
+                                self.session_total_fees += self.current_trade_fees
+                                if net > 0:
+                                    self.session_wins += 1
+                                else:
+                                    self.session_losses += 1
+
+                                # Сохраняем данные ДО сброса для логирования
+                                saved_side = self.position_side
+                                saved_avg = self.avg_price
+                                saved_safety = self.safety_count
+                                saved_fees = self.current_trade_fees
+                                saved_confluence = self.current_confluence
+
+                                try:
+                                    with open(CSV_FILE, 'a', newline='') as f:
+                                        csv.writer(f).writerow([
+                                            datetime.now(),
+                                            self.symbol,
+                                            saved_side,
+                                            "SL",
+                                            net,
+                                            saved_fees,
+                                            saved_avg,
+                                            fill_price,
+                                            saved_safety,
+                                            "STOP_MARKET",
+                                            self.current_volatility,
+                                            saved_confluence
+                                        ])
+                                except:
+                                    pass
+
+                                self.log_blackbox("SL_CLOSED", {"pnl": net, "price": fill_price})
+
+                                tg_msg = (f"🛡️ <b>STOP LOSS HIT!</b>\n"
+                                         f"💔 PnL: {net:.2f}$ (Net)\n"
+                                         f"📊 Exit: {fill_price:.2f}\n"
+                                         f"🔄 DCA Used: {saved_safety}\n"
+                                         f"💸 Fees: {saved_fees:.2f}$")
+                                self.tg.send(tg_msg)
+
+                                self.reset_position()
+
+                                if self.graceful_stop_mode:
+                                    self.trading_active = False
+                                    self.graceful_stop_mode = False
+                                    self.tg.send("🛑 Stopped (Graceful)", self.get_keyboard())
+
+                                self.update_dashboard(force=True)
+
+                            elif check['status'] in ['canceled', 'rejected', 'expired']:
+                                self.log("⚠️ SL Order Canceled! Re-placing...", Col.YELLOW)
+                                self.sl_order_id = None
+                                self.place_stop_loss()
 
                     except Exception as e:
                         self.log(f"⚠️ Order check error: {e}", Col.YELLOW)
