@@ -11,7 +11,7 @@
 
 import time
 import csv
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 
 from bot_modules.bot_core import HybridTradingBot
 from bot_modules.bot_indicators import BotIndicatorsMixin
@@ -198,7 +198,6 @@ class HybridTradingBotModular(
                                 self.balance += net
                                 self.in_position = False
 
-                                from datetime import timedelta
                                 self.last_trade_time = datetime.now() - timedelta(hours=2)
 
                                 self.session_total_pnl += net
