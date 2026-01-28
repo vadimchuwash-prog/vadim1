@@ -163,6 +163,7 @@ PROTECTION_ATR_STABLE_RATIO = 0.8  # ATR >80% среднего = риск про
 LOG_FILE = "bot_hybrid.log"
 CSV_FILE = "trades_hybrid.csv"
 MARKET_LOG_FILE = "market_hybrid.csv"
+BLACKBOX_LOG_FILE = "blackbox_hybrid.json"
 SECRETS_FILE = "encrypted_config.bin"
 KEY_FILE = "secret.key"
 

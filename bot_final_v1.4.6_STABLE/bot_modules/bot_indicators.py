@@ -116,16 +116,17 @@ class BotIndicatorsMixin:
         
         # Фактор 4: Объём выше среднего
         # 🆕 v1.4.6: БАГ #1 - Защита от деления на ноль
+        volume_ratio = 0
         mean_vol = df['volume'].iloc[-20:].mean()
         if mean_vol > 0:
             volume_ratio = row['volume'] / mean_vol
             if volume_ratio > 1.2:
                 score += 1
-        
+
         # Фактор 5: Сильный RSI
         if abs(row['RSI'] - 50) < 10:
             score += 1
-        
+
         # Фактор 6: Высокий объём
         if volume_ratio > 1.5:
             score += 1

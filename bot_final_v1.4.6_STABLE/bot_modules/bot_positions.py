@@ -67,6 +67,8 @@ class BotPositionsMixin:
         self.base_entry_price = 0.0
         self.first_entry_price = 0.0
         self.current_trade_fees = 0.0
+        self.current_confluence = 0
+        self.current_stage = 0
 
         # Сброс защиты DCA
         self.max_drawdown_from_entry = 0.0
@@ -369,12 +371,17 @@ class BotPositionsMixin:
           * Уведомления в Telegram о критических ошибках
         - 🔥 БАГ #5: Убрали reduceOnly для BingX Hedge режима
         """
+        # Защита от вызова без позиции
+        if not self.in_position or self.total_size_coins == 0 or self.position_side is None:
+            self.log(f"⚠️ close_position_market called but no position open", Col.YELLOW)
+            return
+
         try:
             self.cancel_all_orders()
-            
+
             real_amount = self.total_size_coins
             price_guess = self.last_price
-            
+
             side_to_close = "sell" if self.position_side == "Buy" else "buy"
             amount = float(self.exchange.amount_to_precision(self.symbol, real_amount))
 
@@ -473,6 +480,9 @@ class BotPositionsMixin:
             self.highest_price_since_entry = 0.0
             self.price_history = []
             self.atr_history = []
+
+            # Сброс trailing
+            self.reset_trailing()
 
             # 🆕 v1.4.5: Сброс счетчика попыток после успешного закрытия
             self.close_attempt_count = 0

@@ -126,6 +126,22 @@ class BotMonitoringMixin:
                     self.dca_order_id = None
                     self.place_limit_dca()
 
+            # 2.5. Проверяем наличие SL ордера
+            if not self.sl_order_id:
+                self.log("🚑 Doctor: No SL order! Placing...", Col.YELLOW)
+                self.place_stop_loss()
+            else:
+                try:
+                    order = self.exchange.fetch_order(self.sl_order_id, self.symbol)
+                    if order['status'] in ['canceled', 'rejected', 'expired']:
+                        self.log(f"🚑 Doctor: SL order {self.sl_order_id} is {order['status']}! Re-placing...", Col.YELLOW)
+                        self.sl_order_id = None
+                        self.place_stop_loss()
+                except Exception as e:
+                    self.log(f"🚑 Doctor: SL order {self.sl_order_id} not found! Re-placing...", Col.YELLOW)
+                    self.sl_order_id = None
+                    self.place_stop_loss()
+
             # 3. 🆕 ДОПОЛНИТЕЛЬНО: Отменяем ВСЕ лишние ордера на бирже
             try:
                 open_orders = self.exchange.fetch_open_orders(self.symbol)
@@ -134,6 +150,8 @@ class BotMonitoringMixin:
                     valid_order_ids.add(str(self.tp_order_id))
                 if self.dca_order_id:
                     valid_order_ids.add(str(self.dca_order_id))
+                if self.sl_order_id:
+                    valid_order_ids.add(str(self.sl_order_id))
 
                 for order in open_orders:
                     order_id = str(order['id'])
@@ -389,8 +407,10 @@ class BotMonitoringMixin:
                     self.update_dashboard(force=True)
 
                 elif data == "panic_sell":
-                    self.tg.answer_callback(callback_id, "⚠️ Экстренное закрытие!")
-                    self.close_position_market("Panic Sell")
+                    if self.in_position:
+                        self.close_position_market("Panic Sell")
+                    else:
+                        self.tg.edit_message(msg_id, "⚠️ Нет открытой позиции для закрытия", self.get_keyboard())
 
                 elif data == "balance":
                     self.refresh_wallet_status()
