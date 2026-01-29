@@ -1,6 +1,11 @@
 """
-🤖 BOT CORE MODULE
+🤖 BOT CORE MODULE v1.4.7
 Базовый класс торгового бота с инициализацией и утилитами
+
+ИСПРАВЛЕНИЯ v1.4.7:
+- 🔥 Добавлен мониторинг SL ордера в run() (КРИТИЧЕСКИЙ БАГ!)
+- 🔧 Убран дублирующий answer_callback в Telegram
+- 🔒 Убран захардкоженный API ключ из config.py
 
 КРИТИЧЕСКИЕ ИСПРАВЛЕНИЯ v1.4.5:
 - 🔧 Защита от бесконечных попыток закрытия
@@ -141,7 +146,7 @@ class HybridTradingBot:
             level=logging.INFO, 
             format='%(asctime)s %(message)s'
         )
-        self.log("🚀 Hybrid Bot v1.4.5 Started!", Col.GREEN)
+        self.log("🚀 Hybrid Bot v1.4.7 Started!", Col.GREEN)
         self.log(f"💰 Starting Balance: ${self.balance:.2f}", Col.CYAN)
         if self.has_ai:
             self.log("🤖 AI Analytics & Chat: ENABLED", Col.CYAN)

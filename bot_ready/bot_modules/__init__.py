@@ -1,6 +1,12 @@
 """
-🤖 BOT MODULES PACKAGE v1.4.6
+🤖 BOT MODULES PACKAGE v1.4.7
 Модульная структура торгового бота
+
+ИСПРАВЛЕНИЯ v1.4.7:
+- 🔥 Добавлен мониторинг SL ордера в run() (КРИТИЧЕСКИЙ БАГ!)
+- 🔧 Убран дублирующий answer_callback в Telegram
+- 🔒 Убран захардкоженный API ключ из config.py
+- 📦 Добавлен экспорт AnalyticsMixin
 
 Модули:
 - bot_core: Базовый класс с инициализацией и логированием
@@ -9,13 +15,13 @@
 - bot_indicators: Индикаторы и технический анализ
 - bot_trailing: Трейлинг стопы (Trend + Range)
 - bot_protection: Умная защита DCA v1.4.3
-- bot_monitoring: Мониторинг, Telegram, AI чат (НОВЫЙ!)
+- bot_monitoring: Мониторинг, Telegram, AI чат
 - bot_main: Главный класс (объединяет все миксины)
+- analytics: Black Box логирование, PnL Audit, Future Spy
 
 Утилиты:
 - constants: Константы, перечисления, emoji
 - utils: Форматирование и расчеты
-- analytics: Black Box логирование, PnL Audit
 """
 
 from .bot_core import HybridTradingBot
@@ -25,11 +31,12 @@ from .bot_indicators import BotIndicatorsMixin
 from .bot_trailing import BotTrailingMixin
 from .bot_protection import BotProtectionMixin
 from .bot_monitoring import BotMonitoringMixin
+from .analytics import AnalyticsMixin  # 🆕 v1.4.7: Добавлен экспорт
 
 # Главный класс с модульной архитектурой
 from .bot_main import HybridTradingBotModular, TradingBot
 
-__version__ = "1.4.6"
+__version__ = "1.4.7"
 __all__ = [
     'HybridTradingBot',
     'BotPositionsMixin',
@@ -38,6 +45,7 @@ __all__ = [
     'BotTrailingMixin',
     'BotProtectionMixin',
     'BotMonitoringMixin',
+    'AnalyticsMixin',  # 🆕 v1.4.7
     'HybridTradingBotModular',
     'TradingBot'
 ]

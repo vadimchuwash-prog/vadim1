@@ -205,6 +205,7 @@ class BotIndicatorsMixin:
         
         # 7. Защита от ножа
         # 🆕 v1.4.6: БАГ #3 - Защита от деления на ноль
+        price_change_3 = 0
         price_3_candles_ago = df.iloc[-4]['close']
         if price_3_candles_ago > 0:
             price_change_3 = (row['close'] - price_3_candles_ago) / price_3_candles_ago

@@ -24,9 +24,10 @@
 import os
 
 # 🔑 API KEYS
-AI_GEMINI_KEY = os.getenv("GEMINI_API_KEY", "AIzaSyDHrTaNZo8pR55GNmYLASC3yKtx-Y1HRcU")
+# 🔧 v1.4.7: Убран захардкоженный ключ - используйте переменную окружения GEMINI_API_KEY
+AI_GEMINI_KEY = os.getenv("GEMINI_API_KEY", "")
 AI_MODEL_NAME = "gemini-1.5-flash"  # Стабильная модель для вашего API ключа
-TG_BOT_TOKEN = ""
+TG_BOT_TOKEN = os.getenv("TG_BOT_TOKEN", "")  # Используйте переменную окружения
 
 HAS_AI = True
 
@@ -163,6 +164,7 @@ PROTECTION_ATR_STABLE_RATIO = 0.8  # ATR >80% среднего = риск про
 LOG_FILE = "bot_hybrid.log"
 CSV_FILE = "trades_hybrid.csv"
 MARKET_LOG_FILE = "market_hybrid.csv"
+BLACKBOX_LOG_FILE = "blackbox_hybrid.json"
 SECRETS_FILE = "encrypted_config.bin"
 KEY_FILE = "secret.key"
 
