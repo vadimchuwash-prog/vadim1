@@ -119,6 +119,8 @@ class BotTrailingMixin:
         Для режима Range: закрывает позицию при откате от пика
         Порог отката зависит от уровня прибыли (0.05%-0.10%)
         TP продолжает двигаться вверх по мере роста цены
+
+        🆕 v1.4.8: КРИТИЧЕСКИЙ ФИКС - Трейлинг срабатывает ТОЛЬКО в прибыли!
         """
         if not self.range_trailing_enabled or not self.in_position:
             return False
@@ -130,15 +132,17 @@ class BotTrailingMixin:
         current_price = self.last_price
         side_mult = 1 if self.position_side == "Buy" else -1
 
+        # 🆕 v1.4.8: Рассчитываем текущий PnL
+        pnl_pct = (current_price - self.avg_price) / self.avg_price * side_mult
+
         # Получаем текущий динамический порог
         current_callback_threshold = self.get_range_trailing_callback()
 
-        # Обновляем пик цены
+        # Обновляем пик цены ТОЛЬКО если позиция в плюсе
         if self.position_side == "Buy":
-            if current_price > self.range_peak_price:
+            if current_price > self.range_peak_price and pnl_pct > 0:
                 old_peak = self.range_peak_price
                 self.range_peak_price = current_price
-                pnl_pct = (current_price - self.avg_price) / self.avg_price * side_mult
                 self.log(f"📈 Range Peak Updated: ${old_peak:.2f} → ${current_price:.2f} (PnL: {pnl_pct*100:+.2f}%, порог: {current_callback_threshold*100:.2f}%)", Col.CYAN)
 
                 # Обновляем TP вверх (если изменение значительное)
@@ -148,10 +152,9 @@ class BotTrailingMixin:
             callback = (self.range_peak_price - current_price) / self.range_peak_price
 
         else:  # SHORT
-            if current_price < self.range_peak_price or self.range_peak_price == 0:
+            if (current_price < self.range_peak_price or self.range_peak_price == 0) and pnl_pct > 0:
                 old_peak = self.range_peak_price
                 self.range_peak_price = current_price
-                pnl_pct = (current_price - self.avg_price) / self.avg_price * side_mult
                 self.log(f"📉 Range Peak Updated: ${old_peak:.2f} → ${current_price:.2f} (PnL: {pnl_pct*100:+.2f}%, порог: {current_callback_threshold*100:.2f}%)", Col.CYAN)
 
                 # Обновляем TP вниз (если изменение значительное)
@@ -160,9 +163,9 @@ class BotTrailingMixin:
             # Проверяем откат от пика
             callback = (current_price - self.range_peak_price) / self.range_peak_price
 
-        # Если откат больше ДИНАМИЧЕСКОГО порога - закрываем
-        if callback >= current_callback_threshold:
-            pnl_pct = (current_price - self.avg_price) / self.avg_price * side_mult
+        # 🆕 v1.4.8: КРИТИЧЕСКИЙ ФИКС - Закрываем ТОЛЬКО если позиция в прибыли!
+        # Трейлинг защищает ПРИБЫЛЬ, а не фиксирует убытки
+        if callback >= current_callback_threshold and pnl_pct > 0:
             self.log(f"🔔 RANGE TRAILING STOP! Откат: {callback*100:.3f}% (порог: {current_callback_threshold*100:.2f}%)", Col.MAGENTA)
             self.close_position_market(f"Range Trailing ({pnl_pct*100:+.2f}%)")
             return True
