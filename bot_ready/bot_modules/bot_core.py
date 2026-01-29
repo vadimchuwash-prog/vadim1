@@ -147,7 +147,7 @@ class HybridTradingBot:
             level=logging.INFO, 
             format='%(asctime)s %(message)s'
         )
-        self.log("🚀 Hybrid Bot v1.4.7 Started!", Col.GREEN)
+        self.log("🚀 Hybrid Bot v1.4.9 Started!", Col.GREEN)
         self.log(f"💰 Starting Balance: ${self.balance:.2f}", Col.CYAN)
         if self.has_ai:
             self.log("🤖 AI Analytics & Chat: ENABLED", Col.CYAN)
