@@ -2,8 +2,9 @@
 🆕 v1.4.2: BotTrailingMixin - Модуль управления трейлинг-стопами
 Содержит логику для TREND TRAILING и RANGE TRAILING режимов
 
-🆕 v1.4.8: КРИТИЧЕСКИЕ ИСПРАВЛЕНИЯ:
-- Range Trailing активируется только при достижении RANGE_TRAILING_ACTIVATION_PROFIT
+🆕 v1.4.9: АДАПТИВНАЯ АКТИВАЦИЯ:
+- TREND: активация при 70% пути к динамическому TP
+- RANGE: активация при 50% пути к динамическому TP
 - Закрытие по лимитному ордеру с перевыставлением каждые 5 секунд
 - Трейлинг срабатывает ТОЛЬКО когда позиция в прибыли
 """
@@ -16,7 +17,7 @@ from config import (
     TREND_TRAILING_ACTIVATION_VOL_ADJUST,
     RANGE_TRAILING_THRESHOLDS,
     RANGE_TRAILING_TP_UPDATE_THRESHOLD,
-    RANGE_TRAILING_ACTIVATION_PROFIT,
+    RANGE_TRAILING_ACTIVATION_RATIO,
     TRAILING_CLOSE_USE_LIMIT,
     TRAILING_LIMIT_ORDER_TIMEOUT,
     TRAILING_LIMIT_MAX_RETRIES,
@@ -127,8 +128,9 @@ class BotTrailingMixin:
 
     def check_and_activate_range_trailing(self):
         """
-        🆕 v1.4.8: Проверяет и активирует Range Trailing при достижении порога прибыли
-        Вызывается в основном цикле для Range рынков
+        🆕 v1.4.9: АДАПТИВНАЯ активация Range Trailing
+        Активируется при достижении RANGE_TRAILING_ACTIVATION_RATIO (50%) от динамического TP
+        Пример: если TP = 0.35%, активация при 0.35% × 50% = +0.175%
         """
         if not self.in_position or not self.range_market_type:
             return
@@ -144,14 +146,19 @@ class BotTrailingMixin:
         side_mult = 1 if self.position_side == "Buy" else -1
         pnl_pct = (current_price - self.avg_price) / self.avg_price * side_mult
 
-        # Активируем при достижении порога прибыли
-        if pnl_pct >= RANGE_TRAILING_ACTIVATION_PROFIT:
+        # 🆕 v1.4.9: Получаем динамический TP и рассчитываем порог активации
+        tp_distance = self.get_dynamic_tp_steps()
+        activation_threshold = tp_distance * RANGE_TRAILING_ACTIVATION_RATIO
+
+        # Активируем при достижении % от TP
+        if pnl_pct >= activation_threshold:
             self.range_trailing_enabled = True
             self.range_peak_price = current_price
 
             # Показываем многоуровневую защиту
             thresholds_str = " → ".join([f"{t[1]*100:.2f}%" for t in RANGE_TRAILING_THRESHOLDS])
-            self.log(f"🎯 Range Trailing ACTIVATED @ ${current_price:.2f} (PnL: {pnl_pct*100:+.2f}% >= {RANGE_TRAILING_ACTIVATION_PROFIT*100:.2f}%)", Col.CYAN)
+            self.log(f"🎯 Range Trailing ACTIVATED @ ${current_price:.2f}", Col.CYAN)
+            self.log(f"   PnL: {pnl_pct*100:+.2f}% >= {activation_threshold*100:.2f}% (TP={tp_distance*100:.2f}% × {RANGE_TRAILING_ACTIVATION_RATIO*100:.0f}%)", Col.GRAY)
             self.log(f"   Многоуровневые пороги: {thresholds_str}", Col.GRAY)
 
     def check_range_trailing(self):
