@@ -327,14 +327,16 @@ class BotPositionsMixin:
             # 🆕 v1.4.5: Сброс счетчика попыток закрытия при новой позиции
             self.close_attempt_count = 0
 
-            # 🆕 v1.4.2: Активация Range Trailing для Range рынков
+            # 🆕 v1.4.8: Range Trailing - ОТЛОЖЕННАЯ активация
+            # Трейлинг теперь активируется НЕ сразу, а при достижении RANGE_TRAILING_ACTIVATION_PROFIT
             if not self.is_trending_market:
-                self.range_trailing_enabled = True
-                self.range_peak_price = final_fill_price
+                self.range_market_type = True  # Флаг что это Range рынок
+                self.range_trailing_enabled = False  # НЕ активируем сразу!
+                self.range_peak_price = 0.0  # Пик будет установлен при активации
                 self.last_tp_update_price = final_fill_price
-                # Показываем многоуровневую защиту
-                thresholds_str = " → ".join([f"{t[1]*100:.2f}%" for t in RANGE_TRAILING_THRESHOLDS])
-                self.log(f"🎯 Range Trailing ENABLED (Многоуровневый: {thresholds_str})", Col.CYAN)
+                self.log(f"🎯 Range Market detected - Trailing will activate at +{RANGE_TRAILING_ACTIVATION_PROFIT*100:.2f}% profit", Col.CYAN)
+            else:
+                self.range_market_type = False
 
             self.update_dashboard(force=True)
 

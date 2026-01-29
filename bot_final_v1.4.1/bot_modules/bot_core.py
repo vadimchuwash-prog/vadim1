@@ -91,8 +91,9 @@ class HybridTradingBot:
         self.trailing_active = False
         self.trailing_peak_price = 0.0
 
-        # ===== RANGE TRAILING (v1.4.2) =====
+        # ===== RANGE TRAILING (v1.4.2, v1.4.8) =====
         # Многоуровневая защита для Range режима
+        self.range_market_type = False  # 🆕 v1.4.8: Флаг Range рынка (трейлинг активируется позже)
         self.range_trailing_enabled = False
         self.range_peak_price = 0.0
         self.last_tp_update_price = 0.0

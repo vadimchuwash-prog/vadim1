@@ -1,8 +1,14 @@
 """
 🆕 v1.4.2: BotTrailingMixin - Модуль управления трейлинг-стопами
 Содержит логику для TREND TRAILING и RANGE TRAILING режимов
+
+🆕 v1.4.8: КРИТИЧЕСКИЕ ИСПРАВЛЕНИЯ:
+- Range Trailing активируется только при достижении RANGE_TRAILING_ACTIVATION_PROFIT
+- Закрытие по лимитному ордеру с перевыставлением каждые 5 секунд
+- Трейлинг срабатывает ТОЛЬКО когда позиция в прибыли
 """
 
+import time
 from config import (
     TRAILING_ENABLED,
     TREND_TRAILING_ACTIVATION_RATIO,
@@ -10,6 +16,10 @@ from config import (
     TREND_TRAILING_ACTIVATION_VOL_ADJUST,
     RANGE_TRAILING_THRESHOLDS,
     RANGE_TRAILING_TP_UPDATE_THRESHOLD,
+    RANGE_TRAILING_ACTIVATION_PROFIT,
+    TRAILING_CLOSE_USE_LIMIT,
+    TRAILING_LIMIT_ORDER_TIMEOUT,
+    TRAILING_LIMIT_MAX_RETRIES,
     Col
 )
 
@@ -17,10 +27,12 @@ from config import (
 class BotTrailingMixin:
     """
     Миксин для управления трейлинг-стопами в боте.
-    
+
     Поддерживает два режима:
     1. TREND TRAILING - Гибридный адаптивный трейлинг для трендовых движений
     2. RANGE TRAILING - Многоуровневая защита для флетового режима
+
+    🆕 v1.4.8: Отложенная активация и лимитное закрытие
     """
 
     def check_trailing_stop(self):
@@ -88,7 +100,7 @@ class BotTrailingMixin:
             # Проверяем откат
             if callback >= callback_threshold:
                 self.log(f"🔔 TREND TRAILING STOP! Откат: {callback*100:.3f}% (порог: {callback_threshold*100:.2f}%)", Col.MAGENTA)
-                self.close_position_market(f"Trend Trailing ({pnl_pct*100:+.2f}%)")
+                self._close_trailing_position(f"Trend Trailing ({pnl_pct*100:+.2f}%)")
                 return True
 
         return False
@@ -113,6 +125,35 @@ class BotTrailingMixin:
         # Если вышли за все пороги, используем самый жёсткий
         return RANGE_TRAILING_THRESHOLDS[-1][1]
 
+    def check_and_activate_range_trailing(self):
+        """
+        🆕 v1.4.8: Проверяет и активирует Range Trailing при достижении порога прибыли
+        Вызывается в основном цикле для Range рынков
+        """
+        if not self.in_position or not self.range_market_type:
+            return
+
+        # Если уже активирован - ничего не делаем
+        if self.range_trailing_enabled:
+            return
+
+        if self.avg_price == 0:
+            return
+
+        current_price = self.last_price
+        side_mult = 1 if self.position_side == "Buy" else -1
+        pnl_pct = (current_price - self.avg_price) / self.avg_price * side_mult
+
+        # Активируем при достижении порога прибыли
+        if pnl_pct >= RANGE_TRAILING_ACTIVATION_PROFIT:
+            self.range_trailing_enabled = True
+            self.range_peak_price = current_price
+
+            # Показываем многоуровневую защиту
+            thresholds_str = " → ".join([f"{t[1]*100:.2f}%" for t in RANGE_TRAILING_THRESHOLDS])
+            self.log(f"🎯 Range Trailing ACTIVATED @ ${current_price:.2f} (PnL: {pnl_pct*100:+.2f}% >= {RANGE_TRAILING_ACTIVATION_PROFIT*100:.2f}%)", Col.CYAN)
+            self.log(f"   Многоуровневые пороги: {thresholds_str}", Col.GRAY)
+
     def check_range_trailing(self):
         """
         🆕 v1.4.2: Range Trailing режим - Многоуровневая защита
@@ -120,8 +161,14 @@ class BotTrailingMixin:
         Порог отката зависит от уровня прибыли (0.05%-0.10%)
         TP продолжает двигаться вверх по мере роста цены
 
-        🆕 v1.4.8: КРИТИЧЕСКИЙ ФИКС - Трейлинг срабатывает ТОЛЬКО в прибыли!
+        🆕 v1.4.8: КРИТИЧЕСКИЕ ФИКСЫ:
+        - Активация только при достижении RANGE_TRAILING_ACTIVATION_PROFIT
+        - Трейлинг срабатывает ТОЛЬКО в прибыли
+        - Закрытие лимитным ордером с перевыставлением
         """
+        # 🆕 v1.4.8: Сначала проверяем активацию
+        self.check_and_activate_range_trailing()
+
         if not self.range_trailing_enabled or not self.in_position:
             return False
 
@@ -167,10 +214,160 @@ class BotTrailingMixin:
         # Трейлинг защищает ПРИБЫЛЬ, а не фиксирует убытки
         if callback >= current_callback_threshold and pnl_pct > 0:
             self.log(f"🔔 RANGE TRAILING STOP! Откат: {callback*100:.3f}% (порог: {current_callback_threshold*100:.2f}%)", Col.MAGENTA)
-            self.close_position_market(f"Range Trailing ({pnl_pct*100:+.2f}%)")
+            self._close_trailing_position(f"Range Trailing ({pnl_pct*100:+.2f}%)")
             return True
 
         return False
+
+    def _close_trailing_position(self, reason):
+        """
+        🆕 v1.4.8: Закрытие позиции по трейлингу
+        Использует лимитный ордер с перевыставлением или рыночный (по настройке)
+        """
+        if TRAILING_CLOSE_USE_LIMIT:
+            self._close_position_limit_trailing(reason)
+        else:
+            self.close_position_market(reason)
+
+    def _close_position_limit_trailing(self, reason):
+        """
+        🆕 v1.4.8: Закрытие позиции ЛИМИТНЫМ ордером с перевыставлением
+
+        Алгоритм:
+        1. Выставляем лимитный ордер по текущей цене (чуть лучше для быстрого исполнения)
+        2. Ждём TRAILING_LIMIT_ORDER_TIMEOUT секунд
+        3. Если не исполнился - отменяем и перевыставляем по новой цене
+        4. Максимум TRAILING_LIMIT_MAX_RETRIES попыток, потом market
+        """
+        if not self.in_position or self.total_size_coins == 0:
+            return
+
+        self.log(f"📋 Closing by LIMIT order: {reason}", Col.CYAN)
+
+        # Отменяем все ордера (TP, DCA, SL)
+        self.cancel_all_orders()
+
+        real_amount = self.total_size_coins
+        side_to_close = "sell" if self.position_side == "Buy" else "buy"
+        amount = float(self.exchange.amount_to_precision(self.symbol, real_amount))
+
+        for attempt in range(1, TRAILING_LIMIT_MAX_RETRIES + 1):
+            try:
+                # Получаем актуальную цену
+                current_price = self.last_price
+
+                # Для быстрого исполнения ставим цену чуть лучше рыночной
+                # Sell - чуть ниже, Buy - чуть выше
+                price_offset = current_price * 0.0001  # 0.01%
+                if side_to_close == "sell":
+                    limit_price = current_price - price_offset
+                else:
+                    limit_price = current_price + price_offset
+
+                limit_price = float(self.exchange.price_to_precision(self.symbol, limit_price))
+
+                self.log(f"   Попытка {attempt}/{TRAILING_LIMIT_MAX_RETRIES}: Limit {side_to_close} @ ${limit_price:.2f}", Col.GRAY)
+
+                params = {'positionSide': 'LONG' if self.position_side == 'Buy' else 'SHORT'}
+                order = self.exchange.create_order(
+                    symbol=self.symbol,
+                    type='limit',
+                    side=side_to_close,
+                    amount=amount,
+                    price=limit_price,
+                    params=params
+                )
+
+                order_id = order['id']
+
+                # Ждём исполнения
+                for _ in range(TRAILING_LIMIT_ORDER_TIMEOUT):
+                    time.sleep(1)
+                    try:
+                        filled_order = self.exchange.fetch_order(order_id, self.symbol)
+                        status = filled_order.get('status', '')
+
+                        if status == 'closed':
+                            # Ордер исполнен!
+                            exec_price = float(filled_order.get('average') or filled_order.get('price') or limit_price)
+                            self.log(f"✅ Limit order FILLED @ ${exec_price:.2f}", Col.GREEN)
+                            self._finalize_trailing_close(reason, exec_price, real_amount)
+                            return
+                        elif status == 'canceled':
+                            self.log(f"⚠️ Limit order was canceled externally", Col.YELLOW)
+                            break
+                    except Exception as e:
+                        self.log(f"⚠️ Error checking order: {e}", Col.YELLOW)
+
+                # Не исполнился за таймаут - отменяем
+                try:
+                    self.exchange.cancel_order(order_id, self.symbol)
+                    self.log(f"🔄 Limit order canceled, retrying...", Col.YELLOW)
+                except:
+                    pass
+
+            except Exception as e:
+                self.log(f"❌ Limit order failed: {e}", Col.RED)
+
+        # Все попытки исчерпаны - закрываем по рынку
+        self.log(f"⚠️ Falling back to MARKET order after {TRAILING_LIMIT_MAX_RETRIES} attempts", Col.YELLOW)
+        self.close_position_market(reason)
+
+    def _finalize_trailing_close(self, reason, exec_price, amount):
+        """
+        🆕 v1.4.8: Завершение закрытия позиции по трейлингу (после лимитного ордера)
+        """
+        from config import TAKER_FEE
+
+        # Расчет PnL
+        side_mult = 1 if self.position_side == "Buy" else -1
+        gross_pnl = (exec_price - self.avg_price) * amount * side_mult
+
+        # Комиссия за закрытие
+        exit_fee = amount * exec_price * TAKER_FEE
+        self.current_trade_fees += exit_fee
+        net_pnl = gross_pnl - self.current_trade_fees
+
+        # Обновляем баланс
+        self.current_balance += net_pnl
+        self.session_pnl += net_pnl
+
+        # Обновляем статистику
+        if net_pnl > 0:
+            self.session_wins += 1
+        else:
+            self.session_losses += 1
+
+        # Логируем
+        pnl_sign = "+" if net_pnl >= 0 else ""
+        self.log(f"🏁 CLOSED: {reason} | PnL: ${pnl_sign}{net_pnl:.2f} (fees: ${self.current_trade_fees:.2f})", Col.MAGENTA)
+
+        # Сбрасываем состояние позиции
+        old_side = self.position_side
+        self.in_position = False
+        self.position_side = None
+        self.total_size_coins = 0
+        self.avg_price = 0.0
+        self.dca_count = 0
+        self.reset_trailing()
+        self.reset_dca_protection()
+        self.current_trade_fees = 0.0
+
+        # Запись в CSV и blackbox
+        try:
+            self._log_trade_to_csv(old_side, exec_price, net_pnl, reason)
+        except:
+            pass
+
+        try:
+            self.blackbox_log_event('exit', {
+                'reason': reason,
+                'exit_price': exec_price,
+                'pnl': net_pnl,
+                'fees': self.current_trade_fees
+            })
+        except:
+            pass
 
     def _update_tp_for_range_trailing(self):
         """
@@ -211,3 +408,4 @@ class BotTrailingMixin:
         self.range_trailing_enabled = False
         self.range_peak_price = 0.0
         self.last_tp_update_price = 0.0
+        self.range_market_type = False  # 🆕 v1.4.8
