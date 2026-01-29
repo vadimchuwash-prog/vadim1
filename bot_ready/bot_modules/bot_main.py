@@ -1,0 +1,47 @@
+"""
+🤖 HYBRID TRADING BOT v1.4.5 - MAIN CLASS
+Главный класс бота с модульной архитектурой
+
+КРИТИЧЕСКИЕ ИСПРАВЛЕНИЯ v1.4.5:
+- 🛡️ Защита от бесконечного цикла закрытия позиции
+- 🔧 Все модули разбиты на логические компоненты
+- ✅ Сохранен весь функционал из v1.4.4
+"""
+
+from bot_modules.bot_core import HybridTradingBot
+from bot_modules.bot_indicators import BotIndicatorsMixin
+from bot_modules.bot_positions import BotPositionsMixin
+from bot_modules.bot_trailing import BotTrailingMixin
+from bot_modules.bot_protection import BotProtectionMixin
+from bot_modules.bot_orders import BotOrdersMixin
+from bot_modules.bot_monitoring import BotMonitoringMixin
+from bot_modules.analytics import AnalyticsMixin
+
+
+class HybridTradingBotModular(
+    BotIndicatorsMixin,
+    BotPositionsMixin,
+    BotTrailingMixin,
+    BotOrdersMixin,
+    BotProtectionMixin,
+    BotMonitoringMixin,
+    AnalyticsMixin,
+    HybridTradingBot
+):
+    """
+    🤖 Модульный торговый бот v1.4.6
+
+    Наследует миксины в порядке приоритета:
+    1. BotIndicatorsMixin - индикаторы и анализ
+    2. BotPositionsMixin - управление позициями
+    3. BotTrailingMixin - трейлинг стопы
+    4. BotOrdersMixin - управление ордерами
+    5. BotProtectionMixin - умная защита DCA
+    6. BotMonitoringMixin - мониторинг и телеграм
+    7. AnalyticsMixin - аналитика (Black Box, PnL Audit, Future Spy)
+    8. HybridTradingBot - базовый класс
+    """
+    pass
+
+# Для обратной совместимости
+TradingBot = HybridTradingBotModular
