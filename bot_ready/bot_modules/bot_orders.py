@@ -42,15 +42,16 @@ class BotOrdersMixin:
         except: pass
 
     def place_stop_loss(self):
-        """🆕 Размещение Stop Loss ордера"""
+        """🆕 v1.5.0: Динамический Stop Loss (сужается после DCA)"""
         if not self.in_position or self.sl_order_id:
             return False
-        
+
         try:
             side_mult = 1 if self.position_side == "Buy" else -1
-            
-            # SL на уровне MAX_ACCOUNT_LOSS_PCT
-            sl_distance = MAX_ACCOUNT_LOSS_PCT
+
+            # 🆕 v1.5.0: Динамический SL от уровня DCA
+            sl_idx = min(self.safety_count, len(SL_DISTANCES) - 1)
+            sl_distance = SL_DISTANCES[sl_idx]
             sl_price = self.avg_price * (1 + (sl_distance * (-side_mult)))
             
             price = float(self.exchange.price_to_precision(self.symbol, sl_price))
@@ -76,6 +77,20 @@ class BotOrdersMixin:
         except Exception as e:
             self.log(f"❌ SL placement error: {e}", Col.RED)
             return False
+
+    def update_stop_loss(self):
+        """🆕 v1.5.0: Обновить SL после DCA (отменить старый, поставить новый)"""
+        if self.sl_order_id:
+            try:
+                self.exchange.cancel_order(self.sl_order_id, self.symbol)
+                self.log(f"🗑️ Old SL canceled for update", Col.GRAY)
+            except:
+                pass
+            self.sl_order_id = None
+
+        sl_idx = min(self.safety_count, len(SL_DISTANCES) - 1)
+        self.log(f"🛡️ Updating SL: level {sl_idx} → {SL_DISTANCES[sl_idx]*100:.1f}% from avg ${self.avg_price:.2f}", Col.CYAN)
+        return self.place_stop_loss()
 
     def place_limit_tp(self):
         """Размещение TP - ИСПРАВЛЕНО v1.4.1"""
@@ -311,12 +326,15 @@ class BotOrdersMixin:
             })
             
             self.send_or_update_trade_message(f"DCA{self.safety_count} 🔨")
-            
+
             self.place_limit_tp()
-            
+
+            # 🆕 v1.5.0: КРИТИЧЕСКИЙ ФИКС - обновляем SL после DCA!
+            self.update_stop_loss()
+
             if self.safety_count < SAFETY_ORDERS_COUNT:
                 self.place_limit_dca()
-            
+
             self.update_dashboard(force=True)
         except Exception as e:
             self.log(f"❌ DCA Execute Error: {e}", Col.RED)

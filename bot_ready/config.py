@@ -56,22 +56,22 @@ STAGE3_MIN_ENTRY = 0.018
 STAGE3_BASE_ENTRY = 0.025
 STAGE3_MAX_ENTRY = 0.030
 
-# 🔨 СЕТКА (из ultrabtc7 - БЕЗ ИЗМЕНЕНИЙ!)
-SAFETY_ORDERS_COUNT = 5      
-MIN_EXCHANGE_ORDER_USD = 5.1 
+# 🔨 v1.5.0: SMART DCA (1 уровень, тяжёлый вес)
+# Математика: DCA1 вес 5x → отскок 0.17% = профит ("любой чих")
+SAFETY_ORDERS_COUNT = 1
+MIN_EXCHANGE_ORDER_USD = 5.1
 
-# Дистанции (из ultrabtc7)
-HAMMER_DISTANCES_TREND = [0.006, 0.012, 0.020, 0.030, 0.045]
-HAMMER_DISTANCES_RANGE = [0.010, 0.018, 0.030, 0.045, 0.065]
+# Дистанции: одна глубокая докупка
+HAMMER_DISTANCES_TREND = [0.015]  # -1.5% от средней
+HAMMER_DISTANCES_RANGE = [0.015]  # -1.5% от средней
 
-# Веса (из ultrabtc7)
-HAMMER_WEIGHTS_TREND = [1.4, 2.0, 2.8, 3.5, 4.5]
-HAMMER_WEIGHTS_RANGE = [1.6, 2.2, 3.0, 4.0, 5.0]
+# Веса: тяжёлый DCA1 для быстрого снижения средней
+HAMMER_WEIGHTS_TREND = [5.0]  # 5x: avg падает так что 0.17% bounce = BE
+HAMMER_WEIGHTS_RANGE = [5.0]  # 5x
 
-# 🎯 ВЫХОД (из ultrabtc7 - БЕЗ ИЗМЕНЕНИЙ!)
-TP_STEPS_HIGH_VOL = [0.0070, 0.0060, 0.0050, 0.0040, 0.0030]  
-TP_STEPS_MED_VOL = [0.0060, 0.0050, 0.0040, 0.0035, 0.0030]   
-TP_STEPS_LOW_VOL = [0.0050, 0.0040, 0.0035, 0.0030, 0.0025]   
+# 🛡️ v1.5.0: ДИНАМИЧЕСКИЙ SL (сужается после DCA)
+# Индекс = safety_count: [после входа, после DCA1]
+SL_DISTANCES = [0.030, 0.020]  # Entry: 3%, After DCA1: 2%   
 
 # 🔄 TREND TRAILING - Гибридный адаптивный (v1.4.2, v1.4.9)
 TRAILING_ENABLED = True
@@ -94,8 +94,15 @@ TREND_TRAILING_ACTIVATION_VOL_ADJUST = {
     'low_vol': 0.8       # -20% при низкой (раньше активируется)
 }       
 
-# 🛡️ ЗАЩИТА
-MAX_ACCOUNT_LOSS_PCT = 0.30    
+# 🛡️ ЗАЩИТА (v1.5.0: safety net, основной SL через SL_DISTANCES)
+MAX_ACCOUNT_LOSS_PCT = 0.10  # 10% от effective balance (аварийный стоп)
+
+# 🔄 v1.5.0: SMART FLIP (разворот при сильном движении против)
+FLIP_ENABLED = True
+FLIP_ADX_THRESHOLD = 20     # ADX > 20 = подтверждённый тренд → flip
+FLIP_COOLDOWN = 60           # 60 сек кулдаун после flip
+FLIP_SIZE_RATIO = 1.0        # Размер flip = базовый размер входа (1x)
+FLIP_MAX_PER_SESSION = 3     # Максимум 3 flip за сессию    
 
 # 📊 ГИБРИДНЫЕ ФИЛЬТРЫ
 QUALITY_FILTER_ENABLED = True

@@ -26,6 +26,7 @@ from bot_modules.bot_trailing import BotTrailingMixin
 from bot_modules.bot_protection import BotProtectionMixin
 from bot_modules.bot_orders import BotOrdersMixin
 from bot_modules.bot_monitoring import BotMonitoringMixin
+from bot_modules.bot_flip import BotFlipMixin  # 🆕 v1.5.0
 from bot_modules.analytics import AnalyticsMixin
 
 from config import (
@@ -42,6 +43,7 @@ class HybridTradingBotModular(
     BotOrdersMixin,
     BotProtectionMixin,
     BotMonitoringMixin,
+    BotFlipMixin,  # 🆕 v1.5.0
     AnalyticsMixin,
     HybridTradingBot
 ):
@@ -153,7 +155,11 @@ class HybridTradingBotModular(
 
                         if u_pnl <= -max_loss:
                             self.log(f"🚨 STOP LOSS TRIGGERED! PnL: {u_pnl:.2f}$ / Max: -{max_loss:.2f}$", Col.RED)
+                            saved_side = self.position_side
+                            sl_price = self.last_price
                             self.close_position_market(f"STOP LOSS -{MAX_ACCOUNT_LOSS_PCT*100}%")
+                            # 🆕 v1.5.0: Smart Flip после SL
+                            self.check_and_execute_flip(saved_side, sl_price)
                             continue
                     except:
                         pass
@@ -353,6 +359,10 @@ class HybridTradingBotModular(
                                 self.tg.send(tg_msg)
 
                                 self.reset_position()
+
+                                # 🆕 v1.5.0: Smart Flip после биржевого SL
+                                if net < 0:
+                                    self.check_and_execute_flip(saved_side, fill_price)
 
                                 if self.graceful_stop_mode:
                                     self.trading_active = False

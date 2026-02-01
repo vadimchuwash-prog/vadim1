@@ -93,10 +93,15 @@ class HybridTradingBot:
 
         # ===== RANGE TRAILING (v1.4.2, v1.4.8) =====
         # Многоуровневая защита для Range режима
-        self.range_market_type = False  # 🆕 v1.4.8: Флаг Range рынка (трейлинг активируется позже)
+        self.range_market_type = False
         self.range_trailing_enabled = False
         self.range_peak_price = 0.0
         self.last_tp_update_price = 0.0
+
+        # ===== SMART FLIP (v1.5.0) =====
+        self.flip_count = 0
+        self.last_flip_time = None
+        self.is_flip_position = False
 
         # ===== ЗАЩИТА ОТ ЗАВИСАНИЯ (v1.4.5) =====
         self.close_attempt_count = 0
@@ -147,7 +152,7 @@ class HybridTradingBot:
             level=logging.INFO, 
             format='%(asctime)s %(message)s'
         )
-        self.log("🚀 Hybrid Bot v1.4.9 Started!", Col.GREEN)
+        self.log("🚀 Hybrid Bot v1.5.0 Started!", Col.GREEN)
         self.log(f"💰 Starting Balance: ${self.balance:.2f}", Col.CYAN)
         if self.has_ai:
             self.log("🤖 AI Analytics & Chat: ENABLED", Col.CYAN)
