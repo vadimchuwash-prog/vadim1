@@ -1,0 +1,17 @@
+{"timestamp": "2026-01-29T16:32:41.281112", "event": "ENTRY", "data": {"side": "Buy", "price": 88082.5, "size": 0.0098, "confluence": 6, "stage": 3, "balance": 3165.2296, "entry_usd": 43.521907000000006}}
+{"timestamp": "2026-01-29T17:42:43.251531", "event": "DCA_EXECUTED", "data": {"level": 1, "price": 87594.6, "size": 0.0139, "new_avg_price": 87796.3476793249, "total_size": 0.0237, "fee": 0.2435}}
+{"timestamp": "2026-01-29T18:09:23.968230", "event": "DCA_EXECUTED", "data": {"level": 2, "price": 86191.5, "size": 0.0222, "new_avg_price": 86749.98370044053, "total_size": 0.06810000000000001, "fee": 0.3827}}
+{"timestamp": "2026-01-29T19:34:55.242769", "event": "DCA_EXECUTED", "data": {"level": 3, "price": 84270.9, "size": 0.0289, "new_avg_price": 85957.9090909091, "total_size": 0.0748, "fee": 0.4871}}
+{"timestamp": "2026-01-31T19:17:13.562957", "event": "DCA_EXECUTED", "data": {"level": 4, "price": 80715.4, "size": 0.0377, "new_avg_price": 84201.07999999999, "total_size": 0.1125, "fee": 0.6086}}
+{"timestamp": "2026-01-31T20:08:36.403270", "event": "EXIT", "data": {"reason": "STOP LOSS -30.0%", "price": 79670.3, "pnl": -516.0911000000003, "pnl_pct": -1185.8191324199104, "fees": 6.376099999999999, "duration_sec": 185757.16748, "dca_count": 4}}
+{"timestamp": "2026-01-31T21:08:56.031881", "event": "FUTURE_SPY", "data": {"exit_price": 79670.3, "exit_side": "Buy", "max_profit": 4.792499999999018, "max_loss": -126.32625000000098}}
+{"timestamp": "2026-01-31T21:09:16.989859", "event": "ENTRY", "data": {"side": "Sell", "price": 78669.9, "size": 0.0075, "confluence": 6, "stage": 3, "balance": 2646.401, "entry_usd": 29.772011250000002}}
+{"timestamp": "2026-01-31T21:17:43.679778", "event": "ENTRY", "data": {"side": "Sell", "price": 78402.6, "size": 0.006, "confluence": 4, "stage": 2, "balance": 2647.1173, "entry_usd": 23.8240557}}
+{"timestamp": "2026-01-31T21:21:41.471843", "event": "ENTRY", "data": {"side": "Sell", "price": 78165.4, "size": 0.006, "confluence": 4, "stage": 2, "balance": 2647.8671, "entry_usd": 23.8308039}}
+{"timestamp": "2026-01-31T21:39:13.811313", "event": "ENTRY", "data": {"side": "Sell", "price": 77826.2, "size": 0.006, "confluence": 4, "stage": 2, "balance": 2611.5153, "entry_usd": 23.5036377}}
+{"timestamp": "2026-01-31T21:40:08.033671", "event": "TP_CLOSED", "data": {"pnl": 2.0415000000000174, "price": 77454.9}}
+{"timestamp": "2026-01-31T21:42:30.652078", "event": "ENTRY", "data": {"side": "Sell", "price": 77554.6, "size": 0.0061, "confluence": 4, "stage": 2, "balance": 2651.8226, "entry_usd": 23.8664034}}
+{"timestamp": "2026-01-31T21:43:24.667962", "event": "TP_CLOSED", "data": {"pnl": 2.224969999999982, "price": 77158.8}}
+{"timestamp": "2026-01-31T21:43:40.339890", "event": "ENTRY", "data": {"side": "Sell", "price": 76464.6, "size": 0.0062, "confluence": 4, "stage": 2, "balance": 2654.0482, "entry_usd": 23.8864338}}
+{"timestamp": "2026-01-31T21:43:57.617918", "event": "ENTRY", "data": {"side": "Sell", "price": 75933.2, "size": 0.0062, "confluence": 4, "stage": 2, "balance": 2656.1432, "entry_usd": 23.905288799999997}}
+{"timestamp": "2026-01-31T21:44:27.904412", "event": "DCA_EXECUTED", "data": {"level": 1, "price": 76664.5, "size": 0.0087, "new_avg_price": 76360.20067114093, "total_size": 0.0149, "fee": 0.1334}}
