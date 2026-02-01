@@ -32,7 +32,10 @@ from config import (
     STAGE2_MAX_ENTRY,
     STAGE3_MIN_ENTRY,
     STAGE3_BASE_ENTRY,
-    STAGE3_MAX_ENTRY
+    STAGE3_MAX_ENTRY,
+    TP_STEPS_HIGH_VOL,
+    TP_STEPS_MED_VOL,
+    TP_STEPS_LOW_VOL
 )
 from config import Col
 
@@ -281,22 +284,51 @@ class BotIndicatorsMixin:
 
     def get_dynamic_tp_steps(self):
         """
-        🆕 v1.3: Динамический TP от ATR в реальном времени
-        Формула: Base (0.35%) + (ATR% * 0.5)
+        v1.5.1: Динамический TP от волатильности + уровня DCA
+
+        Использует TP_STEPS массивы из config (3 уровня волатильности × 4 уровня DCA)
+        + ATR компонент для точной адаптации
+
+        Returns:
+            float: TP distance (например 0.0055 = 0.55%)
         """
-        base_tp = 0.0035  # 0.35% базовый
-        atr_component = 0.0  # Инициализация
-        
-        if self.current_volatility > 0:
-            # ATR компонент (0.5x от волатильности)
-            atr_component = float(self.current_volatility) * 0.5
-            dynamic_tp = base_tp + atr_component
+        # 1. Выбираем массив по волатильности
+        vol = self.current_volatility
+        if vol > 0.004:
+            tp_steps = TP_STEPS_HIGH_VOL
+            vol_label = "HIGH"
+        elif vol > 0.0025:
+            tp_steps = TP_STEPS_MED_VOL
+            vol_label = "MED"
         else:
-            dynamic_tp = base_tp
-        
-        # Ограничения: минимум 0.25%, максимум 1.0%
-        dynamic_tp = max(0.0025, min(dynamic_tp, 0.010))
-        
-        self.log(f"🎯 Dynamic TP: {dynamic_tp*100:.2f}% (Base: {base_tp*100:.2f}%, ATR: +{atr_component*100:.3f}%)", Col.GRAY)
-        
+            tp_steps = TP_STEPS_LOW_VOL
+            vol_label = "LOW"
+
+        # 2. Выбираем TP по уровню DCA (safety_count)
+        dca_idx = min(getattr(self, 'safety_count', 0), len(tp_steps) - 1)
+        base_tp = tp_steps[dca_idx]
+
+        # 3. ATR микро-подстройка (±15% от базового)
+        atr_adjust = 0.0
+        if vol > 0:
+            BASE_ATR = 0.0020
+            atr_ratio = vol / BASE_ATR
+            atr_adjust = base_tp * (atr_ratio - 1.0) * 0.15
+            atr_adjust = max(-base_tp * 0.15, min(atr_adjust, base_tp * 0.15))
+
+        dynamic_tp = base_tp + atr_adjust
+
+        # 4. Для flip-позиций: расширенный TP (едем по тренду)
+        if getattr(self, 'is_flip_position', False):
+            try:
+                from config import FLIP_TP_MULTIPLIER
+                dynamic_tp *= FLIP_TP_MULTIPLIER
+            except ImportError:
+                dynamic_tp *= 1.5
+
+        # 5. Ограничения: минимум 0.20%, максимум 1.0%
+        dynamic_tp = max(0.0020, min(dynamic_tp, 0.010))
+
+        self.log(f"🎯 TP: {dynamic_tp*100:.2f}% (Vol:{vol_label}, DCA:{dca_idx}, Base:{base_tp*100:.2f}%)", Col.GRAY)
+
         return float(dynamic_tp)

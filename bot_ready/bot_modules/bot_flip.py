@@ -1,16 +1,18 @@
 """
-v1.5.0: SMART FLIP MODULE
+v1.5.1: SMART FLIP MODULE
 Разворот позиции при подтверждённом движении против
 
 Логика:
 1. SL закрывает убыточную позицию
 2. Проверяем: ADX > порога? Тренд подтверждён?
-3. Если да → открываем позицию в ОБРАТНОМ направлении
-4. Если нет → просто ждём (кулдаун)
+3. Если да → открываем позицию в ОБРАТНОМ направлении (1.5x размер)
+4. Flip-позиция получает расширенный TP (едем по тренду)
+5. DCA работает и для flip позиций
 
-Математика на реальном кейсе ($88,082 → $79,670):
-- Без flip: -$516 (4 DCA + SL)
-- С flip: -$68 (SL) + $56 (SHORT) = -$12
+v1.5.1 улучшения:
+- Размер flip 1.5x (чтобы отбить убыток от SL)
+- TP для flip шире на 50% (FLIP_TP_MULTIPLIER)
+- Полная поддержка DCA в flip-позициях
 """
 
 import time
@@ -21,7 +23,9 @@ from config import (
     FLIP_COOLDOWN,
     FLIP_SIZE_RATIO,
     FLIP_MAX_PER_SESSION,
+    FLIP_TP_MULTIPLIER,
     LEVERAGE,
+    SAFETY_ORDERS_COUNT,
     Col
 )
 
@@ -141,9 +145,9 @@ class BotFlipMixin:
         self.last_flip_time = datetime.now()
         self.is_flip_position = True
 
-        # Ставим TP, DCA, SL
+        # Ставим TP, DCA, SL (flip получает полный набор ордеров)
         self.place_limit_tp()
-        if FLIP_SIZE_RATIO >= 1.0:
+        if self.safety_count < SAFETY_ORDERS_COUNT:
             self.place_limit_dca()
         self.place_stop_loss()
 

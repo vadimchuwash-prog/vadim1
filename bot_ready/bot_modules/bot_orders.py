@@ -42,7 +42,7 @@ class BotOrdersMixin:
         except: pass
 
     def place_stop_loss(self):
-        """🆕 v1.5.0: Динамический Stop Loss (сужается после DCA)"""
+        """v1.5.1: Динамический Stop Loss (сужается после каждого DCA: 2.5% → 2% → 1.5% → 1.2%)"""
         if not self.in_position or self.sl_order_id:
             return False
 
@@ -79,7 +79,7 @@ class BotOrdersMixin:
             return False
 
     def update_stop_loss(self):
-        """🆕 v1.5.0: Обновить SL после DCA (отменить старый, поставить новый)"""
+        """v1.5.1: Обновить SL после DCA (отменить старый, поставить новый ближе)"""
         if self.sl_order_id:
             try:
                 self.exchange.cancel_order(self.sl_order_id, self.symbol)
